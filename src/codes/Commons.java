@@ -7,7 +7,9 @@ import org.jogamp.java3d.utils.behaviors.keyboard.KeyNavigatorBehavior;
 import org.jogamp.java3d.utils.behaviors.mouse.MouseBehavior;
 import org.jogamp.java3d.utils.behaviors.mouse.MouseRotate;
 import org.jogamp.java3d.utils.behaviors.mouse.MouseWheelZoom;
+import org.jogamp.java3d.utils.behaviors.vp.OrbitBehavior;
 import org.jogamp.java3d.utils.geometry.Box;
+import org.jogamp.java3d.utils.image.TextureLoader;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.java3d.utils.universe.ViewingPlatform;
 import org.jogamp.vecmath.Color3f;
@@ -75,6 +77,32 @@ public class Commons extends JPanel {
                 rotationAlpha, rotTG, yAxis, 0.0f, (float) Math.PI * 2.0f);
         rot_beh.setSchedulingBounds(hundredBS);
         return rot_beh;
+    }
+
+    public static Texture2D loadTexture(String fn)
+    // load image from file fn as a texture
+    {
+        TextureLoader texLoader = new TextureLoader(fn, null);
+        Texture2D texture = (Texture2D) texLoader.getTexture();
+        if (texture == null)
+            System.out.println("Cannot load texture from " + fn);
+        else {
+            System.out.println("Loaded texture from " + fn);
+            texture.setEnable(true);
+        }
+        return texture;
+    }
+
+    public static void orbitControls(Canvas3D c, SimpleUniverse su)
+  /* OrbitBehaviour allows the user to rotate around the scene, and to
+     zoom in and out.  */
+    {
+        OrbitBehavior orbit =
+                new OrbitBehavior(c, OrbitBehavior.REVERSE_ALL);
+        orbit.setSchedulingBounds(new BoundingSphere(new Point3d(0,0,0), 100));
+
+        ViewingPlatform vp = su.getViewingPlatform();
+        vp.setViewPlatformBehavior(orbit);
     }
 
     /* a function to place one light or two lights at opposite locations */
