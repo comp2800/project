@@ -39,17 +39,3 @@ class Mountains extends Terrains {
         return create_Object();
     }
 }
-
-class Map extends Terrains {
-
-    protected Node create_Object() throws IOException {
-
-        BranchGroup objBG = Commons.f_load("Imports/Objects/Map.obj");
-        return objBG;
-    }
-
-
-    public Node position_Object() throws IOException {
-        return create_Object();
-    }
-}
