@@ -72,6 +72,7 @@ public class TestPlaneTwo extends JPanel {
 				char key = e.getKeyChar();
 				
 				if (key == 'a') {
+					height = 0;
 					trans.rotY(Math.PI/45);
 					plane.objTG.getTransform(plane.trans3d);
 					plane.trans3d.get(mtrx);
@@ -81,6 +82,7 @@ public class TestPlaneTwo extends JPanel {
 				}
 
 				if (key == 'd') {
+					height = 0;
 					trans.rotY(-Math.PI/45);
 					plane.objTG.getTransform(plane.trans3d);
 					plane.trans3d.get(mtrx);
@@ -91,6 +93,7 @@ public class TestPlaneTwo extends JPanel {
 				
 
 				if (key == 'w') {
+					height = 0;
 					trans.rotX(-Math.PI/145);
 					plane.objTG.getTransform(plane.trans3d);
 					plane.trans3d.get(mtrx);
@@ -100,14 +103,7 @@ public class TestPlaneTwo extends JPanel {
 				}
 
 				if (key == 's') {
-					trans.rotX(Math.PI/145);
-					plane.objTG.getTransform(plane.trans3d);
-					plane.trans3d.get(mtrx);
-					plane.trans3d.mul(trans);
-					plane.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-					plane.objTG.setTransform(plane.trans3d);
-				}
-				if (key == 's') {
+					height = 0;
 					trans.rotX(Math.PI/145);
 					plane.objTG.getTransform(plane.trans3d);
 					plane.trans3d.get(mtrx);
@@ -117,25 +113,19 @@ public class TestPlaneTwo extends JPanel {
 				}
 				if (key == 'q') {
 					if(speed <= -1) {
-						height -= 0.001;
-						speed -= 0.005;
+						height -= 0.01;
+						speed += 0.005;
 						System.out.println("You Are Stalling");
 					}
 					else {
-						speed -= 0.001;
-						height += 0.00005;
+						speed += 0.001;
+						height -= 0.0005;
 					}
 				}
 				if (key == 'e') {
 					if(speed <= 0) {
-						speed += 0.001;
-						trans.rotX(-Math.PI/180);
-						plane.objTG.getTransform(plane.trans3d);
-						plane.trans3d.get(mtrx);
-						plane.trans3d.mul(trans);
-						plane.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-						plane.objTG.setTransform(plane.trans3d);
-						height -= 0.0005;
+						speed -= 0.001;
+						height += 0.0005;
 					}
 					else {
 						speed = 0;
