@@ -67,6 +67,25 @@ public class Commons extends JPanel {
         return app;
     }
 
+    public static TextureUnitState loadTextureUnit(String fnm, int texAttr)
+  /* Create a texture unit state by combining a loaded texture
+     and texture attributes. Mipmaps are generated for the texture.
+  */
+    {
+        TextureLoader loader =
+                new TextureLoader(fnm, TextureLoader.GENERATE_MIPMAP, null);
+        System.out.println("Loaded floor texture: " + fnm);
+
+        Texture2D tex = (Texture2D) loader.getTexture();
+        tex.setMinFilter(Texture2D.MULTI_LEVEL_LINEAR);
+
+        TextureAttributes ta = new TextureAttributes();
+        ta.setTextureMode(texAttr);
+
+        TextureUnitState tus =  new TextureUnitState(tex, ta, null);
+        return tus;
+    }
+
     /* a function to create a rotation behavior and refer it to 'my_TG' */
     public static RotationInterpolator rotate_Behavior(int r_num, TransformGroup rotTG) {
 
