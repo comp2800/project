@@ -7,6 +7,7 @@ import org.jogamp.java3d.utils.behaviors.keyboard.KeyNavigatorBehavior;
 import org.jogamp.java3d.utils.behaviors.mouse.MouseBehavior;
 import org.jogamp.java3d.utils.behaviors.mouse.MouseRotate;
 import org.jogamp.java3d.utils.behaviors.mouse.MouseWheelZoom;
+import org.jogamp.java3d.utils.behaviors.vp.OrbitBehavior;
 import org.jogamp.java3d.utils.geometry.Box;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.java3d.utils.universe.ViewingPlatform;
@@ -63,6 +64,18 @@ public class Commons extends JPanel {
         Appearance app = new Appearance();
         app.setMaterial(mtl);                              // set appearance's material
         return app;
+    }
+
+    public static void orbitControls(Canvas3D c, SimpleUniverse su)
+  /* OrbitBehaviour allows the user to rotate around the scene, and to
+     zoom in and out.  */
+    {
+        OrbitBehavior orbit =
+                new OrbitBehavior(c, OrbitBehavior.REVERSE_ALL);
+        orbit.setSchedulingBounds(new BoundingSphere(new Point3d(0,0,0), 100));
+
+        ViewingPlatform vp = su.getViewingPlatform();
+        vp.setViewPlatformBehavior(orbit);
     }
 
     /* a function to create a rotation behavior and refer it to 'my_TG' */

@@ -1,10 +1,15 @@
 import java.awt.event.ActionEvent;
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.IOException;
+
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+
+import static codes.Demo.create_Scene;
+
 
 public class Main implements ActionListener {
 
@@ -12,7 +17,8 @@ public class Main implements ActionListener {
     private boolean running = true;
     private boolean restartLevel = false;
 
-    Main() {
+    Main() throws IOException {
+
         JFrame f = new JFrame("Flight Simulator");
         f.setSize(1200, 800);
 
@@ -31,10 +37,16 @@ public class Main implements ActionListener {
         jmFile.add(jmiExit);
         jmb.add(jmFile);
 
+        f.getContentPane().add(new Demo(create_Scene()));
+
         jmiNewGame.addActionListener((ActionEvent e) -> {
             f.dispose(); // dispose of the current frame
-            new Main(); // create a new instance of Main
-        });
+            try {
+                new Main(); // create a new instance of Main
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+
 
         jmiRestartLevel.addActionListener((ActionEvent e) -> {
             System.out.println("Restarting level " + gameState.getCurrentLevel());
@@ -64,7 +76,8 @@ public class Main implements ActionListener {
         System.out.println(comStr + " Selected");
     }
 
-    public static void main(String args[]){
+
+    public static void main(String args[]) throws IOException {
         new Main();
     }
 
