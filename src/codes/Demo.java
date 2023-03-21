@@ -150,8 +150,7 @@ public class Demo extends JPanel {
 
         setLayout(new BorderLayout());
         add("Center", canvas);
-        frame.setSize(800, 800);                           // set the size of the JFrame
-        frame.setVisible(true);
+
     }
     class MovingPlane extends Behavior {
         public TransformGroup objTG = new TransformGroup();
