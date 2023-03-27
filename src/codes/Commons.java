@@ -67,11 +67,27 @@ public class Commons extends JPanel {
         return app;
     }
 
+    public static Texture texturedApp(String filepath) {
+        TextureLoader loader = new TextureLoader(filepath, null);
+        ImageComponent2D image = loader.getImage();
+        if (image == null)
+            System.out.println("Cannot load file: " + filepath);
+        Texture2D texture = new Texture2D(Texture.BASE_LEVEL,
+                Texture.RGBA, image.getWidth(), image.getHeight());
+        texture.setImage(0, image);
+        return texture;
+    }
+
+    public static Appearance setApp(String filepath) {
+        Appearance app = new Appearance();
+        app.setTexture(texturedApp(filepath));
+        return app;
+    }
+
     public static TextureUnitState loadTextureUnit(String fnm, int texAttr)
   /* Create a texture unit state by combining a loaded texture
      and texture attributes. Mipmaps are generated for the texture.
-  */
-    {
+  */ {
         TextureLoader loader =
                 new TextureLoader(fnm, TextureLoader.GENERATE_MIPMAP, null);
         System.out.println("Loaded floor texture: " + fnm);
@@ -82,7 +98,7 @@ public class Commons extends JPanel {
         TextureAttributes ta = new TextureAttributes();
         ta.setTextureMode(texAttr);
 
-        TextureUnitState tus =  new TextureUnitState(tex, ta, null);
+        TextureUnitState tus = new TextureUnitState(tex, ta, null);
         return tus;
     }
 
@@ -114,11 +130,10 @@ public class Commons extends JPanel {
 
     public static void orbitControls(Canvas3D c, SimpleUniverse su)
   /* OrbitBehaviour allows the user to rotate around the scene, and to
-     zoom in and out.  */
-    {
+     zoom in and out.  */ {
         OrbitBehavior orbit =
                 new OrbitBehavior(c, OrbitBehavior.REVERSE_ALL);
-        orbit.setSchedulingBounds(new BoundingSphere(new Point3d(0,0,0), 100));
+        orbit.setSchedulingBounds(new BoundingSphere(new Point3d(0, 0, 0), 100));
 
         ViewingPlatform vp = su.getViewingPlatform();
         vp.setViewPlatformBehavior(orbit);

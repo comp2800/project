@@ -32,31 +32,7 @@ public class RunME extends JPanel {
         Transform3D T3D = new Transform3D();
         T3D.setRotation(new AxisAngle4f(-1,0,0, (float) Math.PI/2));
         TransformGroup TG = new TransformGroup(T3D);
-        sceneTG.addChild(new City().position_Object());
-//
-//        MultiFloor floor = new MultiFloor("Imports/Textures/sand.jpg", 4, "Imports/Textures/sand.jpg", 2);
-//        // the ground detail textures are grass and bits of stone
-//             /* the frequencies (4, 2) should divide into the floor length
-//                (FLOOR_LEN (20) in MultiFloor) with no remainder */
-//
-//        float [][] heights = floor.getHeightMap();
-//
-//    /* Start building an ordered group of floor meshes.
-//       Ordering avoids rendering conflicts between the meshes. */
-//        OrderedGroup floorOG = new OrderedGroup();
-//        floorOG.addChild(floor);
-//
-//        // load the textures for the splashes
-//        Texture2D flowersTex = loadTexture("Imports/Textures/sand.jpg");
-//        Texture2D waterTex = loadTexture("Imports/Textures/sand.jpg");
-//
-//        // add splashes
-//        for(int i=0; i < 8; i++)     // 8 splashes of flowers
-//            floorOG.addChild( new SplashShape(flowersTex, heights) );
-//
-//        for (int i=0; i < 3; i++)    // 3 pools of water
-//            floorOG.addChild( new SplashShape(waterTex, heights) );
-//        sceneBG.addChild(floorOG);
+        sceneTG.addChild(new Detroit().position_Object());
 
         sceneTG.addChild(TG);
 //        sceneTG.addChild(bg);
@@ -70,7 +46,8 @@ public class RunME extends JPanel {
         Canvas3D canvas = new Canvas3D(config);
 
         SimpleUniverse su = new SimpleUniverse(canvas);    // create a SimpleUniverse
-        Commons.define_Viewer(su, new Point3d(4.0d, 0.0d, 1.0d));
+        Commons.define_Viewer(su, new Point3d(0.0d, 5.0d, 1.0d));
+        su.getViewer().getView().setBackClipDistance(1000);
 
         sceneBG.addChild(Commons.key_Navigation(su));     // allow key navigation
 
