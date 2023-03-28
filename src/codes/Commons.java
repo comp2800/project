@@ -118,7 +118,7 @@ public class Commons extends JPanel {
         Alpha rotationAlpha = new Alpha(-1, r_num);
         RotationInterpolator rot_beh = new RotationInterpolator(
                 rotationAlpha, rotTG, yAxis, 0.0f, (float) Math.PI * 2.0f);
-        rot_beh.setSchedulingBounds(hundredBS);
+        rot_beh.setSchedulingBounds(new BoundingSphere(new Point3d(0, 0, 0), 100000));
         return rot_beh;
     }
 
@@ -141,7 +141,7 @@ public class Commons extends JPanel {
      zoom in and out.  */ {
         OrbitBehavior orbit =
                 new OrbitBehavior(c, OrbitBehavior.REVERSE_ALL);
-        orbit.setSchedulingBounds(new BoundingSphere(new Point3d(0, 0, 0), 100));
+        orbit.setSchedulingBounds(new BoundingSphere(new Point3d(0, 0, 0), 100000));
 
         ViewingPlatform vp = su.getViewingPlatform();
         vp.setViewPlatformBehavior(orbit);
