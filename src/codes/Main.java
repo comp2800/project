@@ -40,11 +40,7 @@ public class Main implements ActionListener {
 
         jmiNewGame.addActionListener((ActionEvent e) -> {
             f.dispose(); // dispose of the current frame
-            try {
-                new Main(); // create a new instance of Main
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+            SwingUtilities.invokeLater(() -> new Main(); // Create new. instance of Main
         });
 
         jmiRestartLevel.addActionListener((ActionEvent e) -> {
@@ -63,7 +59,7 @@ public class Main implements ActionListener {
         });
 
         jmiExit.addActionListener((ActionEvent e) -> {
-            System.exit(0);
+            f.dispose();
         });
 
         f.setJMenuBar(jmb);
@@ -76,7 +72,7 @@ public class Main implements ActionListener {
     }
 
     public static void main(String args[]) throws IOException {
-        new Main();
+        SwingUtilities.invokeLater(() -> new Main();
     }
 
     private class GameState {
