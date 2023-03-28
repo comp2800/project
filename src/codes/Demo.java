@@ -5,6 +5,7 @@ import org.jogamp.java3d.loaders.IncorrectFormatException;
 import org.jogamp.java3d.loaders.ParsingErrorException;
 import org.jogamp.java3d.loaders.Scene;
 import org.jogamp.java3d.loaders.objectfile.ObjectFile;
+import org.jogamp.java3d.utils.geometry.Box;
 import org.jogamp.java3d.utils.geometry.Sphere;
 import org.jogamp.java3d.utils.image.TextureLoader;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
@@ -20,12 +21,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 
-import static codes.Commons.orbitControls;
+import static codes.Commons.*;
 
 public class Demo extends JPanel {
     private Canvas3D canvas = null;
     private Matrix4d mtrx = new Matrix4d();
     private static float speed = -0.03f;
+    private Alpha alpha;
+    protected PositionInterpolator targetting;
+    private static BranchGroup ammoBG;
+    private static TransformGroup aimBot;
     private static float height = 0.0f;
     private static final long serialVersionUID = 1L;
     private static JFrame frame;
@@ -67,6 +72,7 @@ public class Demo extends JPanel {
         GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
         canvas = new Canvas3D(config);
         objTG = new TransformGroup();
+        aimBot = new TransformGroup();
         SimpleUniverse su = new SimpleUniverse(canvas);    // create a SimpleUniverse
         CommonsAR.define_Viewer(su, new Point3d(4.0d, 0.0d, 1.0d));
         su.getViewer().getView().setBackClipDistance(1000);
@@ -81,8 +87,11 @@ public class Demo extends JPanel {
 
         sceneBG.addChild(sceneBX);
 
+        TurretBehaviour gunTurret = new TurretBehaviour(targetting, hundredBS);
+        aimBot.addChild(gunTurret.aimBot);
+        aimBot.addChild(gunTurret);
         Transform3D trans = new Transform3D();
-        MovingPlane plane = new MovingPlane("Imports/Objects/Chassis.obj");
+        MovingPlane plane = new MovingPlane("Imports/Objects/Fighter_01.obj");
         objTG.addChild(plane.objTG);
         objTG.addChild(plane);
         canvas.addKeyListener(new KeyListener(){
@@ -176,18 +185,18 @@ public class Demo extends JPanel {
         add("Center", canvas);
 
     }
+
     class MovingPlane extends Behavior {
         public TransformGroup objTG = new TransformGroup();
         public Transform3D trans3d = new Transform3D();
         private Transform3D trans = new Transform3D();
         private WakeupOnElapsedFrames wakeUpCall;
+        public Transform3D apache = new Transform3D();
         public MovingPlane(String name){
             int flags = ObjectFile.RESIZE | ObjectFile.TRIANGULATE | ObjectFile.STRIPIFY;
             ObjectFile f = new ObjectFile(flags, (float) (60.0 * Math.PI / 180.0));
-            f.setBasePath("src/codesAR280/objects/Chassis.mtl");
             Scene s = null;
             try {
-                f.getBasePath();
                 s = f.load(name);
             }catch(FileNotFoundException e){
                 System.err.println(e);
@@ -199,10 +208,20 @@ public class Demo extends JPanel {
                 System.err.println(e);
                 System.exit(1);
             }
-            PLaneObjects[] prop = new PLaneObjects[1];
-            prop[0] = new createPropeller();
-            objTG.addChild(s.getSceneGroup());
-            objTG.addChild(prop[0].position_Object());
+            Appearance app = new Appearance();
+            apache.rotY((float)Math.PI);
+            BranchGroup objBG = new BranchGroup();
+            TransformGroup filler = new TransformGroup(apache);
+            objBG = s.getSceneGroup();
+            Shape3D ringObj = (Shape3D) objBG.getChild(0);
+            ringObj.setAppearance(setApp("Imports/Textures/Fighter_01_Body_BaseColor.png"));
+            filler.addChild(objBG);
+            objTG.addChild(filler);
+            if(name == "src/codesAR280/objects/Chassis.obj") {
+                PLaneObjects[] prop = new PLaneObjects[1];
+                prop[0] = new createPropeller();
+                objTG.addChild(prop[0].position_Object());
+            }
             objTG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
             this.setSchedulingBounds(thousandBS);
         }
@@ -211,10 +230,50 @@ public class Demo extends JPanel {
             wakeupOn(wakeUpCall);
         }
         public void processStimulus(Iterator<WakeupCriterion> criteria) {
-            trans.set(new Vector3d(0.0, height, speed));
+            trans.set(new Vector3d(0.0f, 0.0f, speed));
             trans3d.mul(trans);
             objTG.setTransform(trans3d);
             wakeupOn(wakeUpCall);
+        }
+    }
+
+    class TurretBehaviour extends Behavior {
+        private Alpha bigAlpha = new Alpha();
+        public TransformGroup aimBot = new TransformGroup();
+        private TransformGroup gggg = new TransformGroup();
+        private WakeupOnElapsedFrames wakeUpCall;
+        private Transform3D trans3 = new Transform3D();
+        private Transform3D trans33 = new Transform3D();
+        public TurretBehaviour(PositionInterpolator getter, Bounds bounds) {
+            ammoBG = new BranchGroup();
+            Appearance app = CommonsAR.obj_Appearance(CommonsAR.Green);
+            Box laser = new Box(0.03f, 0.01f, 0.03f, app);
+            TransformGroup turretTG = new TransformGroup();
+            turretTG.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+            turretTG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+            turretTG.addChild(laser);
+            ammoBG.addChild(turretTG);
+            Transform3D axis = new Transform3D();
+            axis.rotY(Math.PI / 2);
+            getter = new PositionInterpolator(alpha, turretTG, axis, 0.0f, 50.0f);
+            bigAlpha = alpha;
+            getter.setSchedulingBounds(hundredBS);
+            ammoBG.addChild(getter);
+            aimBot.addChild(ammoBG);
+            aimBot.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+            aimBot.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+            this.setSchedulingBounds(bounds);
+        }
+        public void initialize() {
+            wakeUpCall = new WakeupOnElapsedFrames(0);
+            wakeupOn(wakeUpCall);
+        }
+        public void processStimulus(Iterator<WakeupCriterion> criteria) {
+            trans3.set(new Vector3d(0.0f, 0.0f, speed));
+            trans33.mul(trans3);
+            aimBot.setTransform(trans33);
+            wakeupOn(wakeUpCall);
+
         }
     }
     public static void main(String[] args) throws IOException {
