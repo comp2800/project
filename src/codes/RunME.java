@@ -25,17 +25,12 @@ public class RunME extends JPanel {
         BranchGroup sceneBG = new BranchGroup();           // create the scene's BranchGroup
         TransformGroup sceneTG = new TransformGroup();     // create the scene's TransformGroup
         sceneBG.addChild(Commons.add_Lights(Commons.White, 1));
-        Background bg = new Background();
-        bg.setImage(new TextureLoader("Imports/Textures/bg.png", null).getImage());
-        bg.setImageScaleMode(Background.SCALE_FIT_MAX);
-        bg.setApplicationBounds(new BoundingSphere(new Point3d(0, 0, 0), Double.MAX_VALUE));
         Transform3D T3D = new Transform3D();
         T3D.setRotation(new AxisAngle4f(-1,0,0, (float) Math.PI/2));
         TransformGroup TG = new TransformGroup(T3D);
-        sceneTG.addChild(new Detroit().position_Object());
+        sceneTG.addChild(new SolarSystem().position_Object());
 
         sceneTG.addChild(TG);
-//        sceneTG.addChild(bg);
         sceneBG.addChild(sceneTG);
         return sceneBG;
     }

@@ -12,10 +12,7 @@ import org.jogamp.java3d.utils.geometry.Box;
 import org.jogamp.java3d.utils.image.TextureLoader;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.java3d.utils.universe.ViewingPlatform;
-import org.jogamp.vecmath.Color3f;
-import org.jogamp.vecmath.Point3d;
-import org.jogamp.vecmath.Point3f;
-import org.jogamp.vecmath.Vector3d;
+import org.jogamp.vecmath.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -82,6 +79,17 @@ public class Commons extends JPanel {
         Appearance app = new Appearance();
         app.setTexture(texturedApp(filepath));
         return app;
+    }
+
+    public static TransformGroup addRotation(TransformGroup TG, int speed, AxisAngle4f V) {
+        TransformGroup rotatedTG = new TransformGroup();
+        rotatedTG.addChild(TG);
+        RotationInterpolator rot = Commons.rotate_Behavior(speed, rotatedTG);
+        Transform3D rotation = new Transform3D();
+        rotation.setRotation(V);
+        rot.setTransformAxis(rotation);
+        rotatedTG.addChild(rot);
+        return rotatedTG;
     }
 
     public static TextureUnitState loadTextureUnit(String fnm, int texAttr)
