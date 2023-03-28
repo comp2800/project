@@ -9,12 +9,10 @@ import org.jogamp.java3d.utils.behaviors.mouse.MouseRotate;
 import org.jogamp.java3d.utils.behaviors.mouse.MouseWheelZoom;
 import org.jogamp.java3d.utils.behaviors.vp.OrbitBehavior;
 import org.jogamp.java3d.utils.geometry.Box;
+import org.jogamp.java3d.utils.image.TextureLoader;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.java3d.utils.universe.ViewingPlatform;
-import org.jogamp.vecmath.Color3f;
-import org.jogamp.vecmath.Point3d;
-import org.jogamp.vecmath.Point3f;
-import org.jogamp.vecmath.Vector3d;
+import org.jogamp.vecmath.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -66,16 +64,50 @@ public class Commons extends JPanel {
         return app;
     }
 
-    public static void orbitControls(Canvas3D c, SimpleUniverse su)
-  /* OrbitBehaviour allows the user to rotate around the scene, and to
-     zoom in and out.  */
-    {
-        OrbitBehavior orbit =
-                new OrbitBehavior(c, OrbitBehavior.REVERSE_ALL);
-        orbit.setSchedulingBounds(new BoundingSphere(new Point3d(0,0,0), 100));
+    public static Texture texturedApp(String filepath) {
+        TextureLoader loader = new TextureLoader(filepath, null);
+        ImageComponent2D image = loader.getImage();
+        if (image == null)
+            System.out.println("Cannot load file: " + filepath);
+        Texture2D texture = new Texture2D(Texture.BASE_LEVEL,
+                Texture.RGBA, image.getWidth(), image.getHeight());
+        texture.setImage(0, image);
+        return texture;
+    }
 
-        ViewingPlatform vp = su.getViewingPlatform();
-        vp.setViewPlatformBehavior(orbit);
+    public static Appearance setApp(String filepath) {
+        Appearance app = new Appearance();
+        app.setTexture(texturedApp(filepath));
+        return app;
+    }
+
+    public static TransformGroup addRotation(TransformGroup TG, int speed, AxisAngle4f V) {
+        TransformGroup rotatedTG = new TransformGroup();
+        rotatedTG.addChild(TG);
+        RotationInterpolator rot = Commons.rotate_Behavior(speed, rotatedTG);
+        Transform3D rotation = new Transform3D();
+        rotation.setRotation(V);
+        rot.setTransformAxis(rotation);
+        rotatedTG.addChild(rot);
+        return rotatedTG;
+    }
+
+    public static TextureUnitState loadTextureUnit(String fnm, int texAttr)
+  /* Create a texture unit state by combining a loaded texture
+     and texture attributes. Mipmaps are generated for the texture.
+  */ {
+        TextureLoader loader =
+                new TextureLoader(fnm, TextureLoader.GENERATE_MIPMAP, null);
+        System.out.println("Loaded floor texture: " + fnm);
+
+        Texture2D tex = (Texture2D) loader.getTexture();
+        tex.setMinFilter(Texture2D.MULTI_LEVEL_LINEAR);
+
+        TextureAttributes ta = new TextureAttributes();
+        ta.setTextureMode(texAttr);
+
+        TextureUnitState tus = new TextureUnitState(tex, ta, null);
+        return tus;
     }
 
     /* a function to create a rotation behavior and refer it to 'my_TG' */
@@ -86,8 +118,33 @@ public class Commons extends JPanel {
         Alpha rotationAlpha = new Alpha(-1, r_num);
         RotationInterpolator rot_beh = new RotationInterpolator(
                 rotationAlpha, rotTG, yAxis, 0.0f, (float) Math.PI * 2.0f);
-        rot_beh.setSchedulingBounds(hundredBS);
+        rot_beh.setSchedulingBounds(new BoundingSphere(new Point3d(0, 0, 0), 100000));
         return rot_beh;
+    }
+
+    public static Texture2D loadTexture(String fn)
+    // load image from file fn as a texture
+    {
+        TextureLoader texLoader = new TextureLoader(fn, null);
+        Texture2D texture = (Texture2D) texLoader.getTexture();
+        if (texture == null)
+            System.out.println("Cannot load texture from " + fn);
+        else {
+            System.out.println("Loaded texture from " + fn);
+            texture.setEnable(true);
+        }
+        return texture;
+    }
+
+    public static void orbitControls(Canvas3D c, SimpleUniverse su)
+  /* OrbitBehaviour allows the user to rotate around the scene, and to
+     zoom in and out.  */ {
+        OrbitBehavior orbit =
+                new OrbitBehavior(c, OrbitBehavior.REVERSE_ALL);
+        orbit.setSchedulingBounds(new BoundingSphere(new Point3d(0, 0, 0), 100000));
+
+        ViewingPlatform vp = su.getViewingPlatform();
+        vp.setViewPlatformBehavior(orbit);
     }
 
     /* a function to place one light or two lights at opposite locations */

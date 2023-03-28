@@ -5,6 +5,7 @@ import org.jogamp.java3d.loaders.IncorrectFormatException;
 import org.jogamp.java3d.loaders.ParsingErrorException;
 import org.jogamp.java3d.loaders.Scene;
 import org.jogamp.java3d.loaders.objectfile.ObjectFile;
+import org.jogamp.java3d.utils.geometry.Sphere;
 import org.jogamp.java3d.utils.image.TextureLoader;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.vecmath.Matrix4d;
@@ -36,7 +37,30 @@ public class Demo extends JPanel {
         TransformGroup sceneTG = new TransformGroup();     // create the scene's TransformGroup
         sceneBG.addChild(sceneTG);
         sceneBG.addChild(CommonsAR.add_Lights(CommonsAR.White, 1));
-        sceneBG.addChild(new City().position_Object());
+        Asteroid[] asteroids = new Asteroid[500];
+        for (Asteroid asteroid : asteroids) {
+            asteroid = new Asteroid();
+            sceneTG.addChild(asteroid);
+            sceneTG.addChild(asteroid.objTG);
+        }
+        sceneTG.addChild(new SolarSystem().create_Object());
+
+        Appearance bgAppearance = new Appearance();
+        Texture bgTexture = new TextureLoader("Imports/Textures/bg.png", null).getTexture();
+        bgTexture.setBoundaryModeS(Texture.WRAP);
+        bgTexture.setBoundaryModeT(Texture.WRAP);
+        bgAppearance.setTexture(bgTexture);
+
+        PolygonAttributes pa = new PolygonAttributes();
+        pa.setCullFace(PolygonAttributes.CULL_NONE);
+        bgAppearance.setPolygonAttributes(pa);
+
+        Sphere bgSphere = new Sphere(10000f, Sphere.GENERATE_TEXTURE_COORDS, bgAppearance);
+        bgSphere.setCapability(Sphere.ALLOW_BOUNDS_WRITE);
+        bgSphere.setCapability(Sphere.ALLOW_LOCAL_TO_VWORLD_READ);
+
+        sceneTG.addChild(bgSphere);
+
         return sceneBG;
     }
     public Demo(BranchGroup sceneBG) {
