@@ -7,6 +7,7 @@ import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.vecmath.Matrix4d;
 import org.jogamp.vecmath.Point3d;
 import org.jogamp.vecmath.Vector3d;
+import org.jogamp.vecmath.Vector3f;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +18,7 @@ import java.io.IOException;
 import static codes.Commons.*;
 
 public class Demo extends JPanel {
-    private Canvas3D canvas = null;
+    private Canvas3D[] canvas = null;
     private Matrix4d mtrx = new Matrix4d();
     private static float speed = -0.03f;
     protected PositionInterpolator targetting;
@@ -36,13 +37,13 @@ public class Demo extends JPanel {
         TransformGroup sceneTG = new TransformGroup();     // create the scene's TransformGroup
         sceneBG.addChild(sceneTG);
         sceneBG.addChild(CommonsAR.add_Lights(CommonsAR.White, 1));
-        Asteroid[] asteroids = new Asteroid[500];
-        for (Asteroid asteroid : asteroids) {
-            asteroid = new Asteroid();
-            sceneTG.addChild(asteroid);
-            sceneTG.addChild(asteroid.objTG);
-        }
-        sceneTG.addChild(new SolarSystem().create_Object());
+//        Asteroid[] asteroids = new Asteroid[500];
+//        for (Asteroid asteroid : asteroids) {
+//            asteroid = new Asteroid();
+//            sceneTG.addChild(asteroid);
+//            sceneTG.addChild(asteroid.objTG);
+//        }
+//        sceneTG.addChild(new SolarSystem().create_Object());
 
         Appearance bgAppearance = new Appearance();
         Texture bgTexture = new TextureLoader("Imports/Textures/bg.png", null).getTexture();
@@ -64,13 +65,21 @@ public class Demo extends JPanel {
     }
     public Demo(BranchGroup sceneBG) {
         GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
-        canvas = new Canvas3D(config);
+        canvas = new Canvas3D[2];
+        for (int i = 0; i < 2; i++) {
+            canvas[i] = new Canvas3D( config );
+            canvas[i].setSize( 600, 800 );
+            add( canvas[i] );                            // add 2 Canvas3D to Frame
+        }
         objTG = new TransformGroup();
         aimBot = new TransformGroup();
-        SimpleUniverse su = new SimpleUniverse(canvas);    // create a SimpleUniverse
+        SimpleUniverse su = new SimpleUniverse();    // create a SimpleUniverse
+        Locale lcl = su.getLocale();                        // point 2nd/3rd Viewer to c3D[1,2]
+        lcl.addBranchGraph( createViewer( canvas[0] ,  10, 0, 0 ) );
+        lcl.addBranchGraph( createViewer( canvas[1] ,  -10, 0, 0 ) );
         CommonsAR.define_Viewer(su, new Point3d(4.0d, 0.0d, 1.0d));
         su.getViewer().getView().setBackClipDistance(1000);
-        BranchGroup sceneBX = new BranchGroup();
+
 
         Background bg = new Background();
         bg.setImage(new TextureLoader("Imports/Textures/bg.png", null).getImage());
@@ -79,16 +88,16 @@ public class Demo extends JPanel {
 
         sceneBG.addChild(bg);
 
-        sceneBG.addChild(sceneBX);
 
-        Jet.TurretBehaviour gunTurret = new Jet.TurretBehaviour(hundredBS);
-        aimBot.addChild(gunTurret.aimBot);
-        aimBot.addChild(gunTurret);
-        Transform3D trans = new Transform3D();
-        Jet.MovingPlane plane = new Jet.MovingPlane("Imports/Objects/Fighter_01.obj");
-        objTG.addChild(plane.objTG);
-        objTG.addChild(plane);
-        canvas.addKeyListener(new KeyListener(){
+        Jet.TurretBehaviour gunTurret1 = new Jet.TurretBehaviour(hundredBS);
+        aimBot.addChild(gunTurret1.aimBot);
+        aimBot.addChild(gunTurret1);
+        Transform3D trans1 = new Transform3D();
+        trans1.setTranslation(new Vector3f(100, 0, 0));
+        Jet.MovingPlane plane1 = new Jet.MovingPlane("Imports/Objects/Fighter_01.obj");
+        objTG.addChild(plane1.objTG);
+        objTG.addChild(plane1);
+        canvas[0].addKeyListener(new KeyListener(){
             @Override
             public void keyTyped(KeyEvent e) {
                 // TODO Auto-generated method stub
@@ -97,84 +106,188 @@ public class Demo extends JPanel {
                 char key = e.getKeyChar();
 
                 if (key == 'a') {
-                    trans.rotY(Math.PI/20);
-                    plane.objTG.getTransform(plane.trans3d);
-                    plane.trans3d.get(mtrx);
-                    plane.trans3d.mul(trans);
-                    plane.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-                    plane.objTG.setTransform(plane.trans3d);
-                    gunTurret.aimBot.getTransform(gunTurret.trans33);
-                    gunTurret.trans33.get(mtrx);
-                    gunTurret.trans33.mul(trans);
-                    gunTurret.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-                    gunTurret.aimBot.setTransform(gunTurret.trans33);
+                    trans1.rotY(Math.PI/20);
+                    plane1.objTG.getTransform(plane1.trans3d);
+                    plane1.trans3d.get(mtrx);
+                    plane1.trans3d.mul(trans1);
+                    plane1.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
+                    plane1.objTG.setTransform(plane1.trans3d);
+                    gunTurret1.aimBot.getTransform(gunTurret1.trans33);
+                    gunTurret1.trans33.get(mtrx);
+                    gunTurret1.trans33.mul(trans1);
+                    gunTurret1.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
+                    gunTurret1.aimBot.setTransform(gunTurret1.trans33);
                 }
 
                 if (key == 'd') {
-                    trans.rotY(-Math.PI/20);
-                    plane.objTG.getTransform(plane.trans3d);
-                    plane.trans3d.get(mtrx);
-                    plane.trans3d.mul(trans);
-                    plane.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-                    plane.objTG.setTransform(plane.trans3d);
-                    gunTurret.aimBot.getTransform(gunTurret.trans33);
-                    gunTurret.trans33.get(mtrx);
-                    gunTurret.trans33.mul(trans);
-                    gunTurret.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-                    gunTurret.aimBot.setTransform(gunTurret.trans33);
+                    trans1.rotY(-Math.PI/20);
+                    plane1.objTG.getTransform(plane1.trans3d);
+                    plane1.trans3d.get(mtrx);
+                    plane1.trans3d.mul(trans1);
+                    plane1.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
+                    plane1.objTG.setTransform(plane1.trans3d);
+                    gunTurret1.aimBot.getTransform(gunTurret1.trans33);
+                    gunTurret1.trans33.get(mtrx);
+                    gunTurret1.trans33.mul(trans1);
+                    gunTurret1.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
+                    gunTurret1.aimBot.setTransform(gunTurret1.trans33);
                 }
 
 
                 if (key == 'w') {
-                    trans.rotX(-Math.PI/20);
-                    plane.objTG.getTransform(plane.trans3d);
-                    plane.trans3d.get(mtrx);
-                    plane.trans3d.mul(trans);
-                    plane.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-                    plane.objTG.setTransform(plane.trans3d);
-                    gunTurret.aimBot.getTransform(gunTurret.trans33);
-                    gunTurret.trans33.get(mtrx);
-                    gunTurret.trans33.mul(trans);
-                    gunTurret.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-                    gunTurret.aimBot.setTransform(gunTurret.trans33);
+                    trans1.rotX(-Math.PI/20);
+                    plane1.objTG.getTransform(plane1.trans3d);
+                    plane1.trans3d.get(mtrx);
+                    plane1.trans3d.mul(trans1);
+                    plane1.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
+                    plane1.objTG.setTransform(plane1.trans3d);
+                    gunTurret1.aimBot.getTransform(gunTurret1.trans33);
+                    gunTurret1.trans33.get(mtrx);
+                    gunTurret1.trans33.mul(trans1);
+                    gunTurret1.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
+                    gunTurret1.aimBot.setTransform(gunTurret1.trans33);
                 }
 
                 if (key == 's') {
-                    trans.rotX(Math.PI/20);
-                    plane.objTG.getTransform(plane.trans3d);
-                    plane.trans3d.get(mtrx);
-                    plane.trans3d.mul(trans);
-                    plane.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-                    plane.objTG.setTransform(plane.trans3d);
-                    gunTurret.aimBot.getTransform(gunTurret.trans33);
-                    gunTurret.trans33.get(mtrx);
-                    gunTurret.trans33.mul(trans);
-                    gunTurret.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-                    gunTurret.aimBot.setTransform(gunTurret.trans33);
+                    trans1.rotX(Math.PI/20);
+                    plane1.objTG.getTransform(plane1.trans3d);
+                    plane1.trans3d.get(mtrx);
+                    plane1.trans3d.mul(trans1);
+                    plane1.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
+                    plane1.objTG.setTransform(plane1.trans3d);
+                    gunTurret1.aimBot.getTransform(gunTurret1.trans33);
+                    gunTurret1.trans33.get(mtrx);
+                    gunTurret1.trans33.mul(trans1);
+                    gunTurret1.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
+                    gunTurret1.aimBot.setTransform(gunTurret1.trans33);
                 }
                 if (key == 'q') {
-                    if(plane.speed <= -1) {
-                        plane.speed += 0.005;
+                    if(plane1.speed <= -1) {
+                        plane1.speed += 0.005;
                         System.out.println("You Are Stalling");
                     }
                     else {
-                        plane.speed += 0.001;
+                        plane1.speed += 0.001;
                     }
                 }
                 if (key == 'e') {
-                    if(plane.speed <= 0) {
-                        plane.speed -= 0.001;
+                    if(plane1.speed <= 0) {
+                        plane1.speed -= 0.001;
                     }
                     else {
-                        plane.speed = 0;
+                        plane1.speed = 0;
 
                     }
                 }
-                if(plane.speed > 0) {
-                    plane.speed = 0;
+                if(plane1.speed > 0) {
+                    plane1.speed = 0;
                 }
                 if (key == 'f') {
-                    gunTurret.alpha.setStartTime(System.currentTimeMillis());
+                    gunTurret1.alpha.setStartTime(System.currentTimeMillis());
+                }
+            }
+            @Override
+            public void keyReleased(KeyEvent e) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+
+        Jet.TurretBehaviour gunTurret2 = new Jet.TurretBehaviour(hundredBS);
+        aimBot.addChild(gunTurret2.aimBot);
+        aimBot.addChild(gunTurret2);
+        Transform3D trans2 = new Transform3D();
+        trans2.setTranslation(new Vector3f(0, 0, 0));
+        Jet.MovingPlane plane2 = new Jet.MovingPlane("Imports/Objects/Fighter_01.obj");
+        objTG.addChild(plane2.objTG);
+        objTG.addChild(plane2);
+        canvas[1].addKeyListener(new KeyListener(){
+            @Override
+            public void keyTyped(KeyEvent e) {
+                // TODO Auto-generated method stub
+            }
+            public void keyPressed(KeyEvent e) {
+                char key = e.getKeyChar();
+
+                if (key == '4') {
+                    trans2.rotY(Math.PI/20);
+                    plane2.objTG.getTransform(plane2.trans3d);
+                    plane2.trans3d.get(mtrx);
+                    plane2.trans3d.mul(trans2);
+                    plane2.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
+                    plane2.objTG.setTransform(plane2.trans3d);
+                    gunTurret2.aimBot.getTransform(gunTurret2.trans33);
+                    gunTurret2.trans33.get(mtrx);
+                    gunTurret2.trans33.mul(trans2);
+                    gunTurret2.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
+                    gunTurret2.aimBot.setTransform(gunTurret2.trans33);
+                }
+
+                if (key == '6') {
+                    trans2.rotY(-Math.PI/20);
+                    plane2.objTG.getTransform(plane2.trans3d);
+                    plane2.trans3d.get(mtrx);
+                    plane2.trans3d.mul(trans2);
+                    plane2.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
+                    plane2.objTG.setTransform(plane2.trans3d);
+                    gunTurret2.aimBot.getTransform(gunTurret2.trans33);
+                    gunTurret2.trans33.get(mtrx);
+                    gunTurret2.trans33.mul(trans2);
+                    gunTurret2.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
+                    gunTurret2.aimBot.setTransform(gunTurret2.trans33);
+                }
+
+
+                if (key == '5') {
+                    trans2.rotX(-Math.PI/20);
+                    plane2.objTG.getTransform(plane2.trans3d);
+                    plane2.trans3d.get(mtrx);
+                    plane2.trans3d.mul(trans2);
+                    plane2.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
+                    plane2.objTG.setTransform(plane2.trans3d);
+                    gunTurret2.aimBot.getTransform(gunTurret2.trans33);
+                    gunTurret2.trans33.get(mtrx);
+                    gunTurret2.trans33.mul(trans2);
+                    gunTurret2.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
+                    gunTurret2.aimBot.setTransform(gunTurret2.trans33);
+                }
+
+                if (key == '2') {
+                    trans2.rotX(Math.PI/20);
+                    plane2.objTG.getTransform(plane2.trans3d);
+                    plane2.trans3d.get(mtrx);
+                    plane2.trans3d.mul(trans2);
+                    plane2.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
+                    plane2.objTG.setTransform(plane2.trans3d);
+                    gunTurret2.aimBot.getTransform(gunTurret2.trans33);
+                    gunTurret2.trans33.get(mtrx);
+                    gunTurret2.trans33.mul(trans2);
+                    gunTurret2.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
+                    gunTurret2.aimBot.setTransform(gunTurret2.trans33);
+                }
+                if (key == '4') {
+                    if(plane2.speed <= -1) {
+                        plane2.speed += 0.005;
+                        System.out.println("You Are Stalling");
+                    }
+                    else {
+                        plane2.speed += 0.001;
+                    }
+                }
+                if (key == '6') {
+                    if(plane2.speed <= 0) {
+                        plane2.speed -= 0.001;
+                    }
+                    else {
+                        plane2.speed = 0;
+
+                    }
+                }
+                if(plane2.speed > 0) {
+                    plane2.speed = 0;
+                }
+                if (key == '+') {
+                    gunTurret2.alpha.setStartTime(System.currentTimeMillis());
                 }
             }
             @Override
@@ -189,10 +302,8 @@ public class Demo extends JPanel {
         sceneBG.compile();		                           // optimize the BranchGroup
         su.addBranchGraph(sceneBG);                        // attach the scene to SimpleUniverse
 
-        orbitControls(canvas,su);
+        orbitControls(canvas[0],su);
 
-        setLayout(new BorderLayout());
-        add("Center", canvas);
 
     }
 
