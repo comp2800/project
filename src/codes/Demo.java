@@ -15,6 +15,29 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
+import java.io.File;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import org.jogamp.java3d.AudioDevice;
+import org.jogamp.java3d.Background;
+import org.jogamp.java3d.ImageComponent2D;
+import org.jogamp.java3d.MediaContainer;
+import org.jogamp.java3d.PointSound;
+import org.jogamp.java3d.audioengines.javasound.JavaSoundMixer;
+import org.jogamp.java3d.utils.image.TextureLoader;
+
 import static codes.Commons.*;
 
 public class Demo extends JPanel {
@@ -32,6 +55,9 @@ public class Demo extends JPanel {
     private BoundingSphere thousandBS = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 1000.0);
     private static TransformGroup objTG;                              // use 'objTG' to position an object
     public static float n = (float) 1.0;
+
+    SoundEffect sound = new SoundEffect();
+
     public static BranchGroup create_Scene() throws IOException {
         BranchGroup sceneBG = new BranchGroup();           // create the scene' BranchGroup
         TransformGroup sceneTG = new TransformGroup();     // create the scene's TransformGroup
@@ -85,6 +111,10 @@ public class Demo extends JPanel {
         bg.setImage(new TextureLoader("Imports/Textures/bg.png", null).getImage());
         bg.setImageScaleMode(Background.SCALE_FIT_MAX);
         bg.setApplicationBounds(new BoundingSphere(new Point3d(0, 0, 0), Double.MAX_VALUE));
+
+        sound.setFile("Imports/Sounds/background.wav");
+        sound.loop();
+
 
         sceneBG.addChild(bg);
 
@@ -184,6 +214,8 @@ public class Demo extends JPanel {
                 }
                 if (key == 'f') {
                     gunTurret1.alpha.setStartTime(System.currentTimeMillis());
+                    sound.setFile("Imports/Sounds/s2.wav");
+                    sound.play();
                 }
             }
             @Override
@@ -286,8 +318,10 @@ public class Demo extends JPanel {
                 if(plane2.speed > 0) {
                     plane2.speed = 0;
                 }
-                if (key == '+') {
+                if (key == 'l') {
                     gunTurret2.alpha.setStartTime(System.currentTimeMillis());
+                    sound.setFile("Imports/Sounds/s2.wav");
+                    sound.play();
                 }
             }
             @Override
@@ -306,7 +340,40 @@ public class Demo extends JPanel {
 
 
     }
+    public class SoundEffect{
 
+        Clip clip;
+
+        public void setFile(String filename) {
+
+            try {
+                File file = new File(filename);
+                AudioInputStream sound = AudioSystem.getAudioInputStream(file);
+                clip = AudioSystem.getClip();
+                clip.open(sound);
+            }
+            catch(Exception e) {
+
+            }
+        }
+        public void play() {
+            clip.setFramePosition(clip.getFramePosition());
+            clip.start();
+
+        }
+        public void loop() {
+            clip.setFramePosition(clip.getFramePosition());
+            clip.start();
+            clip.loop(10000);
+
+
+        }
+        public void stop() {
+            clip.stop();
+            clip.close();
+        }
+
+    }
     public static void main(String[] args) throws IOException {
         frame = new JFrame();                   // NOTE: change AR to student's initials
         frame.getContentPane().add(new Demo(create_Scene()));  // create an instance of the class
