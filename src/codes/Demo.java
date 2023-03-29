@@ -4,6 +4,8 @@ import org.jogamp.java3d.*;
 import org.jogamp.java3d.utils.geometry.Sphere;
 import org.jogamp.java3d.utils.image.TextureLoader;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
+import org.jogamp.java3d.utils.universe.Viewer;
+import org.jogamp.java3d.utils.universe.ViewingPlatform;
 import org.jogamp.vecmath.Matrix4d;
 import org.jogamp.vecmath.Point3d;
 import org.jogamp.vecmath.Vector3d;
@@ -45,7 +47,8 @@ public class Demo extends JPanel {
     private Matrix4d mtrx = new Matrix4d();
     private static float speed = -0.03f;
     protected PositionInterpolator targetting;
-
+    static Transform3D vpT3D;
+    static Transform3D vpT3D2;
     private static BoundingSphere hundredBS = new BoundingSphere(new Point3d(), 100.0);
     private static BranchGroup ammoBG;
     private static float height = 0.0f;
@@ -88,22 +91,24 @@ public class Demo extends JPanel {
 
         return sceneBG;
     }
+
     public Demo(BranchGroup sceneBG) {
         GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
         canvas = new Canvas3D[2];
         for (int i = 0; i < 2; i++) {
-            canvas[i] = new Canvas3D( config );
-            canvas[i].setSize( 600, 800 );
-            add( canvas[i] );                            // add 2 Canvas3D to Frame
+            canvas[i] = new Canvas3D(config);
+            canvas[i].setSize(600, 800);
+            add(canvas[i]);                            // add 2 Canvas3D to Frame
         }
         objTG = new TransformGroup();
         SimpleUniverse su = new SimpleUniverse();    // create a SimpleUniverse
         Locale lcl = su.getLocale();                        // point 2nd/3rd Viewer to c3D[1,2]
-        lcl.addBranchGraph( createViewer( canvas[0] ,  10, 0, 0 ) );
-        lcl.addBranchGraph( createViewer( canvas[1] ,  -10, 0, 0 ) );
+        ViewingPlatform vp = new ViewingPlatform(1);
+        ViewingPlatform vp2 = new ViewingPlatform(1);
+        lcl.addBranchGraph(createViewer(vp, canvas[0], 10, 0, 0));
+        lcl.addBranchGraph(createViewer(vp2, canvas[1], -10, 0, 0));
         CommonsAR.define_Viewer(su, new Point3d(4.0d, 0.0d, 1.0d));
         su.getViewer().getView().setBackClipDistance(1000);
-
 
         Background bg = new Background();
         bg.setImage(new TextureLoader("Imports/Textures/bg.png", null).getImage());
@@ -120,26 +125,27 @@ public class Demo extends JPanel {
         TurretBehaviour gunTurret1 = new TurretBehaviour(hundredBS);
         Transform3D trans1 = new Transform3D();
         trans1.setTranslation(new Vector3f(100, 0, 0));
-        MovingPlane plane1 = new MovingPlane("Imports/Objects/Fighter_01.obj");
+        MovingPlane plane1 = new MovingPlane("Imports/Objects/Fighter_01.obj", vp);
         objTG.addChild(plane1.objTG);
         objTG.addChild(plane1);
 
         TurretBehaviour gunTurret2 = new TurretBehaviour(hundredBS);
         Transform3D trans2 = new Transform3D();
         trans2.setTranslation(new Vector3f(0, 0, 0));
-        MovingPlane plane2 = new MovingPlane("Imports/Objects/Fighter_01.obj");
+        MovingPlane plane2 = new MovingPlane("Imports/Objects/Fighter_01.obj", vp2);
         objTG.addChild(plane2.objTG);
         objTG.addChild(plane2);
-        canvas[0].addKeyListener(new KeyListener(){
+        canvas[0].addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
                 // TODO Auto-generated method stub
             }
+
             public void keyPressed(KeyEvent e) {
                 char key = e.getKeyChar();
 
                 if (key == 'a') {
-                    trans1.rotY(Math.PI/20);
+                    trans1.rotY(Math.PI / 20);
                     plane1.objTG.getTransform(plane1.trans3d);
                     plane1.trans3d.get(mtrx);
                     plane1.trans3d.mul(trans1);
@@ -150,10 +156,11 @@ public class Demo extends JPanel {
                     gunTurret1.trans33.mul(trans1);
                     gunTurret1.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
                     gunTurret1.aimBot.setTransform(gunTurret1.trans33);
+
                 }
 
                 if (key == 'd') {
-                    trans1.rotY(-Math.PI/20);
+                    trans1.rotY(-Math.PI / 20);
                     plane1.objTG.getTransform(plane1.trans3d);
                     plane1.trans3d.get(mtrx);
                     plane1.trans3d.mul(trans1);
@@ -168,7 +175,7 @@ public class Demo extends JPanel {
 
 
                 if (key == 'w') {
-                    trans1.rotX(-Math.PI/20);
+                    trans1.rotX(-Math.PI / 20);
                     plane1.objTG.getTransform(plane1.trans3d);
                     plane1.trans3d.get(mtrx);
                     plane1.trans3d.mul(trans1);
@@ -182,7 +189,7 @@ public class Demo extends JPanel {
                 }
 
                 if (key == 's') {
-                    trans1.rotX(Math.PI/20);
+                    trans1.rotX(Math.PI / 20);
                     plane1.objTG.getTransform(plane1.trans3d);
                     plane1.trans3d.get(mtrx);
                     plane1.trans3d.mul(trans1);
@@ -195,24 +202,22 @@ public class Demo extends JPanel {
                     gunTurret1.aimBot.setTransform(gunTurret1.trans33);
                 }
                 if (key == 'q') {
-                    if(plane1.speed <= -1) {
+                    if (plane1.speed <= -1) {
                         plane1.speed += 0.005;
                         System.out.println("You Are Stalling");
-                    }
-                    else {
+                    } else {
                         plane1.speed += 0.001;
                     }
                 }
                 if (key == 'e') {
-                    if(plane1.speed <= 0) {
+                    if (plane1.speed <= 0) {
                         plane1.speed -= 0.001;
-                    }
-                    else {
+                    } else {
                         plane1.speed = 0;
 
                     }
                 }
-                if(plane1.speed > 0) {
+                if (plane1.speed > 0) {
                     plane1.speed = 0;
                 }
                 if (key == 'f') {
@@ -221,7 +226,7 @@ public class Demo extends JPanel {
                     sound.play();
                 }
                 if (key == 'j') {
-                    trans2.rotY(Math.PI/20);
+                    trans2.rotY(Math.PI / 20);
                     plane2.objTG.getTransform(plane2.trans3d);
                     plane2.trans3d.get(mtrx);
                     plane2.trans3d.mul(trans2);
@@ -235,7 +240,7 @@ public class Demo extends JPanel {
                 }
 
                 if (key == 'l') {
-                    trans2.rotY(-Math.PI/20);
+                    trans2.rotY(-Math.PI / 20);
                     plane2.objTG.getTransform(plane2.trans3d);
                     plane2.trans3d.get(mtrx);
                     plane2.trans3d.mul(trans2);
@@ -249,7 +254,7 @@ public class Demo extends JPanel {
                 }
 
                 if (key == 'k') {
-                    trans2.rotX(-Math.PI/20);
+                    trans2.rotX(-Math.PI / 20);
                     plane2.objTG.getTransform(plane2.trans3d);
                     plane2.trans3d.get(mtrx);
                     plane2.trans3d.mul(trans2);
@@ -263,7 +268,7 @@ public class Demo extends JPanel {
                 }
 
                 if (key == 'i') {
-                    trans2.rotX(Math.PI/20);
+                    trans2.rotX(Math.PI / 20);
                     plane2.objTG.getTransform(plane2.trans3d);
                     plane2.trans3d.get(mtrx);
                     plane2.trans3d.mul(trans2);
@@ -277,25 +282,23 @@ public class Demo extends JPanel {
                 }
 
                 if (key == 'u') {
-                    if(plane2.speed <= -1) {
+                    if (plane2.speed <= -1) {
                         plane2.speed += 0.005;
                         System.out.println("You Are Stalling");
-                    }
-                    else {
+                    } else {
                         plane2.speed += 0.001;
                     }
                 }
 
                 if (key == 'o') {
-                    if(plane2.speed <= 0) {
+                    if (plane2.speed <= 0) {
                         plane2.speed -= 0.001;
-                    }
-                    else {
+                    } else {
                         plane2.speed = 0;
 
                     }
                 }
-                if(plane2.speed > 0) {
+                if (plane2.speed > 0) {
                     plane2.speed = 0;
                 }
                 if (key == ';') {
@@ -304,6 +307,7 @@ public class Demo extends JPanel {
                     sound.play();
                 }
             }
+
             @Override
             public void keyReleased(KeyEvent e) {
                 // TODO Auto-generated method stub
@@ -317,14 +321,15 @@ public class Demo extends JPanel {
         sceneBG.addChild(gunTurret1);
         sceneBG.addChild(gunTurret2);
         sceneBG.addChild(CommonsAR.key_Navigation(su));     // allow key navigation
-        sceneBG.compile();		                           // optimize the BranchGroup
+        sceneBG.compile();                                   // optimize the BranchGroup
         su.addBranchGraph(sceneBG);                        // attach the scene to SimpleUniverse
 
-        orbitControls(canvas[0],su);
+        orbitControls(canvas[0], su);
 
 
     }
-    public class SoundEffect{
+
+    public class SoundEffect {
 
         Clip clip;
 
@@ -335,16 +340,17 @@ public class Demo extends JPanel {
                 AudioInputStream sound = AudioSystem.getAudioInputStream(file);
                 clip = AudioSystem.getClip();
                 clip.open(sound);
-            }
-            catch(Exception e) {
+            } catch (Exception e) {
 
             }
         }
+
         public void play() {
             clip.setFramePosition(clip.getFramePosition());
             clip.start();
 
         }
+
         public void loop() {
             clip.setFramePosition(clip.getFramePosition());
             clip.start();
@@ -352,12 +358,14 @@ public class Demo extends JPanel {
 
 
         }
+
         public void stop() {
             clip.stop();
             clip.close();
         }
 
     }
+
     public static void main(String[] args) throws IOException {
         frame = new JFrame();                   // NOTE: change AR to student's initials
         frame.getContentPane().add(new Demo(create_Scene()));  // create an instance of the class

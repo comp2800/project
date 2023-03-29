@@ -111,11 +111,10 @@ public class Commons extends JPanel {
         return tus;
     }
 
-    public static ViewingPlatform createViewer(Canvas3D canvas3D,
+    public static ViewingPlatform createViewer(ViewingPlatform vp, Canvas3D canvas3D,
                                                double x, double y, double z) {
         // a Canvas3D can only be attached to a single Viewer
         Viewer viewer = new Viewer( canvas3D );	             // attach a Viewer to its canvas
-        ViewingPlatform vp = new ViewingPlatform( 1 );       // 1 VP with 1 TG above
 
         Point3d center = new Point3d(0, 0, 0);               // define where the eye looks at
         Vector3d up = new Vector3d(0, 1, 0);                 // define camera's up direction
@@ -135,6 +134,7 @@ public class Commons extends JPanel {
         viewer.setViewingPlatform( vp );                      // set VP for the Viewer
         return vp;
     }
+
 
     /* a function to create a rotation behavior and refer it to 'my_TG' */
     public static RotationInterpolator rotate_Behavior(int r_num, TransformGroup rotTG) {

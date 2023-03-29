@@ -7,6 +7,7 @@ import org.jogamp.java3d.loaders.IncorrectFormatException;
 import org.jogamp.java3d.loaders.ParsingErrorException;
 import org.jogamp.java3d.loaders.Scene;
 import org.jogamp.java3d.loaders.objectfile.ObjectFile;
+import org.jogamp.java3d.utils.universe.ViewingPlatform;
 import org.jogamp.vecmath.Point3d;
 import org.jogamp.vecmath.Vector3d;
 
@@ -14,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.util.Iterator;
 
 import static codes.Commons.setApp;
+import static codes.Demo.*;
 
 public class MovingPlane extends Behavior {
     public TransformGroup objTG = new TransformGroup();
@@ -22,9 +24,13 @@ public class MovingPlane extends Behavior {
     private WakeupOnElapsedFrames wakeUpCall;
     public Transform3D apache = new Transform3D();
 
+    private Transform3D T3D = new Transform3D();
+
+    public ViewingPlatform vp;
     float speed = -0.03f;
 
-    public MovingPlane(String name) {
+    public MovingPlane(String name, ViewingPlatform vp) {
+        this.vp = vp;
 
         int flags = ObjectFile.RESIZE | ObjectFile.TRIANGULATE | ObjectFile.STRIPIFY;
         ObjectFile f = new ObjectFile(flags, (float) (60.0 * Math.PI / 180.0));
@@ -64,6 +70,10 @@ public class MovingPlane extends Behavior {
     }
 
     public void processStimulus(Iterator<WakeupCriterion> criteria) {
+
+        vp.getViewPlatformTransform().setTransform(this.trans3d);
+        vp.getViewPlatformTransform().getTransform(T3D);
+        T3D.setTranslation(new Vector3d(0, 1, 0));
         trans.set(new Vector3d(0.0f, 0.0f, speed));
         trans3d.mul(trans);
         objTG.setTransform(trans3d);
