@@ -43,38 +43,30 @@ import org.jogamp.java3d.utils.image.TextureLoader;
 import static codes.Commons.*;
 
 public class Demo extends JPanel {
-    private Canvas3D[] canvas = null;
+    private Canvas3D[] canvas;
     private Matrix4d mtrx = new Matrix4d();
-    private static float speed = -0.03f;
-    protected PositionInterpolator targetting;
-    static Transform3D vpT3D;
-    static Transform3D vpT3D2;
     private static BoundingSphere hundredBS = new BoundingSphere(new Point3d(), 100.0);
-    private static BranchGroup ammoBG;
-    private static float height = 0.0f;
     private static final long serialVersionUID = 1L;
     private static JFrame frame;
-    private BoundingSphere thousandBS = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 1000.0);
     private static TransformGroup objTG;                              // use 'objTG' to position an object
-    public static float n = (float) 1.0;
 
     SoundEffect sound = new SoundEffect();
 
     public static BranchGroup create_Scene() throws IOException {
-        BranchGroup sceneBG = new BranchGroup();           // create the scene' BranchGroup
+        BranchGroup sceneBG = new BranchGroup();           // create the scene's BranchGroup
         TransformGroup sceneTG = new TransformGroup();     // create the scene's TransformGroup
         sceneBG.addChild(sceneTG);
         sceneBG.addChild(CommonsAR.add_Lights(CommonsAR.White, 1));
-//        Asteroid[] asteroids = new Asteroid[500];
-//        for (Asteroid asteroid : asteroids) {
-//            asteroid = new Asteroid();
-//            sceneTG.addChild(asteroid);
-//            sceneTG.addChild(asteroid.objTG);
-//        }
-//        sceneTG.addChild(new SolarSystem().create_Object());
+        Asteroid[] asteroids = new Asteroid[500];
+        for (Asteroid asteroid : asteroids) {
+            asteroid = new Asteroid();
+            sceneTG.addChild(asteroid);
+            sceneTG.addChild(asteroid.objTG);
+        }
+        sceneTG.addChild(new SolarSystem().create_Object());
 
         Appearance bgAppearance = new Appearance();
-        Texture bgTexture = new TextureLoader("Imports/Textures/bg.png", null).getTexture();
+        Texture bgTexture = new TextureLoader("Imports/Textures/bg2.png", null).getTexture();
         bgTexture.setBoundaryModeS(Texture.WRAP);
         bgTexture.setBoundaryModeT(Texture.WRAP);
         bgAppearance.setTexture(bgTexture);
@@ -95,23 +87,24 @@ public class Demo extends JPanel {
     public Demo(BranchGroup sceneBG) {
         GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
         canvas = new Canvas3D[2];
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 1; i++) { // MULTI i=2
             canvas[i] = new Canvas3D(config);
-            canvas[i].setSize(600, 800);
+//            canvas[i].setSize(600, 800); // MULTI SCREEN
+            canvas[i].setSize(1920, 1080); // SOLO SCREEN
             add(canvas[i]);                            // add 2 Canvas3D to Frame
         }
         objTG = new TransformGroup();
         SimpleUniverse su = new SimpleUniverse();    // create a SimpleUniverse
-        Locale lcl = su.getLocale();                        // point 2nd/3rd Viewer to c3D[1,2]
+        Locale lcl = su.getLocale();
         ViewingPlatform vp = new ViewingPlatform(1);
         ViewingPlatform vp2 = new ViewingPlatform(1);
         lcl.addBranchGraph(createViewer(vp, canvas[0], 10, 0, 0));
-        lcl.addBranchGraph(createViewer(vp2, canvas[1], -10, 0, 0));
+        lcl.addBranchGraph(createViewer(vp2, canvas[1], -10, 0, 0)); // MULTI CANVAS
         CommonsAR.define_Viewer(su, new Point3d(4.0d, 0.0d, 1.0d));
         su.getViewer().getView().setBackClipDistance(1000);
 
         Background bg = new Background();
-        bg.setImage(new TextureLoader("Imports/Textures/bg.png", null).getImage());
+        bg.setImage(new TextureLoader("Imports/Textures/bg2.png", null).getImage());
         bg.setImageScaleMode(Background.SCALE_FIT_MAX);
         bg.setApplicationBounds(new BoundingSphere(new Point3d(0, 0, 0), Double.MAX_VALUE));
 
@@ -133,8 +126,8 @@ public class Demo extends JPanel {
         Transform3D trans2 = new Transform3D();
         trans2.setTranslation(new Vector3f(0, 0, 0));
         MovingPlane plane2 = new MovingPlane("Imports/Objects/Fighter_01.obj", vp2);
-        objTG.addChild(plane2.objTG);
-        objTG.addChild(plane2);
+//        objTG.addChild(plane2.objTG); // MULTI
+//        objTG.addChild(plane2);       // MULTI
         canvas[0].addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -204,14 +197,17 @@ public class Demo extends JPanel {
                 if (key == 'q') {
                     if (plane1.speed <= -1) {
                         plane1.speed += 0.005;
+//                        plane1.speed += 5; // SOLO HYPERSPACE
                         System.out.println("You Are Stalling");
                     } else {
                         plane1.speed += 0.001;
+//                        plane1.speed += 1; // SOLO MACH 10
                     }
                 }
                 if (key == 'e') {
                     if (plane1.speed <= 0) {
                         plane1.speed -= 0.001;
+//                        plane1.speed -= 1; // SOLO CRASH
                     } else {
                         plane1.speed = 0;
 
@@ -319,7 +315,7 @@ public class Demo extends JPanel {
 
         sceneBG.addChild(objTG);
         sceneBG.addChild(gunTurret1);
-        sceneBG.addChild(gunTurret2);
+//        sceneBG.addChild(gunTurret2); // MULTI
         sceneBG.addChild(CommonsAR.key_Navigation(su));     // allow key navigation
         sceneBG.compile();                                   // optimize the BranchGroup
         su.addBranchGraph(sceneBG);                        // attach the scene to SimpleUniverse
@@ -367,7 +363,7 @@ public class Demo extends JPanel {
     }
 
     public static void main(String[] args) throws IOException {
-        frame = new JFrame();                   // NOTE: change AR to student's initials
+        frame = new JFrame();
         frame.getContentPane().add(new Demo(create_Scene()));  // create an instance of the class
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }

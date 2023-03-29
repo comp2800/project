@@ -31,7 +31,7 @@ public class MovingPlane extends Behavior {
 
     public MovingPlane(String name, ViewingPlatform vp) {
         this.vp = vp;
-
+        this.trans3d.setScale(1/2f); // SOLO SCALE
         int flags = ObjectFile.RESIZE | ObjectFile.TRIANGULATE | ObjectFile.STRIPIFY;
         ObjectFile f = new ObjectFile(flags, (float) (60.0 * Math.PI / 180.0));
         Scene s = null;
@@ -73,7 +73,7 @@ public class MovingPlane extends Behavior {
 
         vp.getViewPlatformTransform().setTransform(this.trans3d);
         vp.getViewPlatformTransform().getTransform(T3D);
-        T3D.setTranslation(new Vector3d(0, 1, 0));
+        vp.getViewPlatformTransform().setTransform(this.trans3d);
         trans.set(new Vector3d(0.0f, 0.0f, speed));
         trans3d.mul(trans);
         objTG.setTransform(trans3d);
