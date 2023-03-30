@@ -22,7 +22,7 @@ public class TurretBehaviour extends Behavior {
     public BranchGroup ammoBG;
     public TurretBehaviour(Bounds bounds) {
         ammoBG = new BranchGroup();
-        Appearance app = CommonsAR.obj_Appearance(CommonsAR.Green);
+        Appearance app = Commons.obj_Appearance(Commons.Green);
         Box laser = new Box(0.03f, 0.01f, 0.03f, app);
         TransformGroup turretTG = new TransformGroup();
         turretTG.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);

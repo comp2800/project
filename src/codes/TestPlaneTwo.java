@@ -40,7 +40,7 @@ public class TestPlaneTwo extends JPanel {
 		BranchGroup sceneBG = new BranchGroup();           // create the scene' BranchGroup
 		TransformGroup sceneTG = new TransformGroup();     // create the scene's TransformGroup
 		sceneBG.addChild(sceneTG);
-		sceneBG.addChild(CommonsAR.add_Lights(CommonsAR.White, 1));	
+		sceneBG.addChild(Commons.add_Lights(Commons.White, 1));
 		return sceneBG;
 	}
 	public TestPlaneTwo(BranchGroup sceneBG) {
@@ -48,7 +48,7 @@ public class TestPlaneTwo extends JPanel {
 		canvas = new Canvas3D(config);
 		objTG = new TransformGroup();
 		SimpleUniverse su = new SimpleUniverse(canvas);    // create a SimpleUniverse
-		CommonsAR.define_Viewer(su, new Point3d(4.0d, 0.0d, 1.0d));
+		Commons.define_Viewer(su, new Point3d(4.0d, 0.0d, 1.0d));
 		BranchGroup sceneBX = new BranchGroup();
    
         TextureLoader txtrLdr = new  TextureLoader("Imports/Textures/TrollFace.jpg",null);
@@ -144,7 +144,7 @@ public class TestPlaneTwo extends JPanel {
 		});
 		sceneBG.addChild(objTG);
 		
-		sceneBG.addChild(CommonsAR.key_Navigation(su));     // allow key navigation
+		sceneBG.addChild(Commons.key_Navigation(su));     // allow key navigation
 		sceneBG.compile();		                           // optimize the BranchGroup
 		su.addBranchGraph(sceneBG);                        // attach the scene to SimpleUniverse
 
@@ -176,10 +176,7 @@ public class TestPlaneTwo extends JPanel {
 				System.err.println(e);
 				System.exit(1);
 			}
-			PLaneObjects[] prop = new PLaneObjects[1];
-			prop[0] = new createPropeller();
 			objTG.addChild(s.getSceneGroup());
-			objTG.addChild(prop[0].position_Object());
 			objTG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 			this.setSchedulingBounds(thousandBS);
 		}
