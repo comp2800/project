@@ -1,7 +1,5 @@
 package codes;
 
-import codes.PLaneObjects;
-import codes.createPropeller;
 import org.jogamp.java3d.*;
 import org.jogamp.java3d.loaders.IncorrectFormatException;
 import org.jogamp.java3d.loaders.ParsingErrorException;
@@ -55,11 +53,6 @@ public class MovingPlane extends Behavior {
         ringObj.setAppearance(setApp("Imports/Textures/Fighter_01_Body_BaseColor.png"));
         filler.addChild(objBG);
         objTG.addChild(filler);
-        if (name == "src/codesAR280/objects/Chassis.obj") {
-            PLaneObjects[] prop = new PLaneObjects[1];
-            prop[0] = new createPropeller();
-            objTG.addChild(prop[0].position_Object());
-        }
         objTG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         this.setSchedulingBounds(new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 1000.0));
     }

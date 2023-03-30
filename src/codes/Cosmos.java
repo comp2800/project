@@ -21,47 +21,6 @@ public abstract class Cosmos {
 
 }
 
-class Dunes extends Cosmos {
-
-    protected Node create_Object() throws IOException {
-
-
-        Transform3D T3D = new Transform3D();
-        T3D.setScale(10);
-        TransformGroup TG = new TransformGroup(T3D);
-        MultiFloor floor = new MultiFloor("Imports/Textures/sand.jpg", 4, "Imports/Textures/sand.jpg", 2);
-        // the ground detail textures are grass and bits of stone
-             /* the frequencies (4, 2) should divide into the floor length
-                (FLOOR_LEN (20) in MultiFloor) with no remainder */
-
-        float[][] heights = floor.getHeightMap();
-
-    /* Start building an ordered group of floor meshes.
-       Ordering avoids rendering conflicts between the meshes. */
-        OrderedGroup floorOG = new OrderedGroup();
-        floorOG.addChild(floor);
-
-        // load the textures for the splashes
-        Texture2D flowersTex = loadTexture("Imports/Textures/sand.jpg");
-        Texture2D waterTex = loadTexture("Imports/Textures/sand.jpg");
-
-        // add splashes
-        for (int i = 0; i < 8; i++)     // 8 splashes of flowers
-            floorOG.addChild(new SplashShape(flowersTex, heights));
-
-        for (int i = 0; i < 3; i++)    // 3 pools of water
-            floorOG.addChild(new SplashShape(waterTex, heights));
-        TG.addChild(floorOG);
-        return TG;
-    }
-
-
-    public Node position_Object() throws IOException {
-        return create_Object();
-    }
-}
-
-
 class Planet extends Cosmos {
     private String texture;
     private float scale;
@@ -106,7 +65,7 @@ class SysPlanet extends Cosmos {
         earthTG.addChild(new Planet(texture, scale).create_Object());
         TransformGroup TG = new TransformGroup();
         TG.addChild(earthTG);
-        TG = addRotation(TG, speed, new AxisAngle4f(0,0,0,(float)Math.PI/2));
+        TG = addRotation(TG, speed, new AxisAngle4f(0, 0, 0, (float) Math.PI / 2));
         return TG;
     }
 
@@ -118,7 +77,7 @@ class SysPlanet extends Cosmos {
 class Earth extends Cosmos {
 
     protected Node create_Object() throws IOException {
-        return new SysPlanet("Imports/Textures/SolarSystem/Earth.jpg", 24*10000,1f,1.50f*15).create_Object();
+        return new SysPlanet("Imports/Textures/SolarSystem/Earth.jpg", 24 * 10000, 1f, 1.50f * 15).create_Object();
     }
 
     public Node position_Object() throws IOException {
@@ -129,7 +88,7 @@ class Earth extends Cosmos {
 class Mercury extends Cosmos {
 
     protected Node create_Object() throws IOException {
-        return new SysPlanet("Imports/Textures/SolarSystem/Mercury.jpg", 1392*10000,1/3f,.58f*10).create_Object();
+        return new SysPlanet("Imports/Textures/SolarSystem/Mercury.jpg", 1392 * 10000, 1 / 3f, .58f * 10).create_Object();
     }
 
     public Node position_Object() throws IOException {
@@ -140,7 +99,7 @@ class Mercury extends Cosmos {
 class Venus extends Cosmos {
 
     protected Node create_Object() throws IOException {
-        return new SysPlanet("Imports/Textures/SolarSystem/Venus.jpg", 5832*10000,0.9f,1.08f*10).create_Object();
+        return new SysPlanet("Imports/Textures/SolarSystem/Venus.jpg", 5832 * 10000, 0.9f, 1.08f * 10).create_Object();
     }
 
     public Node position_Object() throws IOException {
@@ -151,7 +110,7 @@ class Venus extends Cosmos {
 class Mars extends Cosmos {
 
     protected Node create_Object() throws IOException {
-        return new SysPlanet("Imports/Textures/SolarSystem/Mars.jpg", 24*10000,1f,2.28f*20).create_Object();
+        return new SysPlanet("Imports/Textures/SolarSystem/Mars.jpg", 24 * 10000, 1f, 2.28f * 20).create_Object();
     }
 
     public Node position_Object() throws IOException {
@@ -162,7 +121,7 @@ class Mars extends Cosmos {
 class Jupiter extends Cosmos {
 
     protected Node create_Object() throws IOException {
-        return new SysPlanet("Imports/Textures/SolarSystem/Jupiter.jpg", 9*10000,11f,7.78f*10).create_Object();
+        return new SysPlanet("Imports/Textures/SolarSystem/Jupiter.jpg", 9 * 10000, 11f, 7.78f * 10).create_Object();
     }
 
     public Node position_Object() throws IOException {
@@ -173,7 +132,7 @@ class Jupiter extends Cosmos {
 class Saturn extends Cosmos {
 
     protected Node create_Object() throws IOException {
-        return new SysPlanet("Imports/Textures/SolarSystem/Saturn.jpg", 10*10000,9f,14.3f*10).create_Object();
+        return new SysPlanet("Imports/Textures/SolarSystem/Saturn.jpg", 10 * 10000, 9f, 14.3f * 10).create_Object();
     }
 
     public Node position_Object() throws IOException {
@@ -184,7 +143,7 @@ class Saturn extends Cosmos {
 class Uranus extends Cosmos {
 
     protected Node create_Object() throws IOException {
-        return new SysPlanet("Imports/Textures/SolarSystem/Uranus.jpg", 17*10000,4f,28f*10).create_Object();
+        return new SysPlanet("Imports/Textures/SolarSystem/Uranus.jpg", 17 * 10000, 4f, 28f * 10).create_Object();
     }
 
     public Node position_Object() throws IOException {
@@ -195,7 +154,7 @@ class Uranus extends Cosmos {
 class Neptune extends Cosmos {
 
     protected Node create_Object() throws IOException {
-        return new SysPlanet("Imports/Textures/SolarSystem/Neptune.jpg", 16*10000,3.75f,45f*10).create_Object();
+        return new SysPlanet("Imports/Textures/SolarSystem/Neptune.jpg", 16 * 10000, 3.75f, 45f * 10).create_Object();
     }
 
     public Node position_Object() throws IOException {
@@ -206,7 +165,7 @@ class Neptune extends Cosmos {
 class Sun extends Cosmos {
 
     protected Node create_Object() throws IOException {
-        return new Planet("Imports/Textures/SolarSystem/Sun.jpg",15f).create_Object();
+        return new Planet("Imports/Textures/SolarSystem/Sun.jpg", 15f).create_Object();
     }
 
     public Node position_Object() throws IOException {

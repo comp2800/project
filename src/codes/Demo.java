@@ -4,7 +4,6 @@ import org.jogamp.java3d.*;
 import org.jogamp.java3d.utils.geometry.Sphere;
 import org.jogamp.java3d.utils.image.TextureLoader;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
-import org.jogamp.java3d.utils.universe.Viewer;
 import org.jogamp.java3d.utils.universe.ViewingPlatform;
 import org.jogamp.vecmath.Matrix4d;
 import org.jogamp.vecmath.Point3d;
@@ -17,30 +16,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyListener;
-import java.awt.event.KeyEvent;
-import java.io.File;
-
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
-import org.jogamp.java3d.AudioDevice;
-import org.jogamp.java3d.Background;
-import org.jogamp.java3d.ImageComponent2D;
-import org.jogamp.java3d.MediaContainer;
-import org.jogamp.java3d.PointSound;
-import org.jogamp.java3d.audioengines.javasound.JavaSoundMixer;
-import org.jogamp.java3d.utils.image.TextureLoader;
-
-import static codes.Commons.*;
+import static codes.Commons.createViewer;
+import static codes.Commons.orbitControls;
 
 public class Demo extends JPanel {
     private Canvas3D[] canvas;
@@ -56,7 +33,7 @@ public class Demo extends JPanel {
         BranchGroup sceneBG = new BranchGroup();           // create the scene's BranchGroup
         TransformGroup sceneTG = new TransformGroup();     // create the scene's TransformGroup
         sceneBG.addChild(sceneTG);
-        sceneBG.addChild(CommonsAR.add_Lights(CommonsAR.White, 1));
+        sceneBG.addChild(Commons.add_Lights(Commons.White, 1));
         Asteroid[] asteroids = new Asteroid[500];
         for (Asteroid asteroid : asteroids) {
             asteroid = new Asteroid();
@@ -87,10 +64,10 @@ public class Demo extends JPanel {
     public Demo(BranchGroup sceneBG) {
         GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
         canvas = new Canvas3D[2];
-        for (int i = 0; i < 1; i++) { // MULTI i=2
+        for (int i = 0; i < 2; i++) { // MULTI i=2
             canvas[i] = new Canvas3D(config);
-//            canvas[i].setSize(600, 800); // MULTI SCREEN
-            canvas[i].setSize(1920, 1080); // SOLO SCREEN
+            canvas[i].setSize(600, 800); // MULTI SCREEN
+//            canvas[i].setSize(1920, 1080); // SOLO SCREEN
             add(canvas[i]);                            // add 2 Canvas3D to Frame
         }
         objTG = new TransformGroup();
@@ -100,7 +77,7 @@ public class Demo extends JPanel {
         ViewingPlatform vp2 = new ViewingPlatform(1);
         lcl.addBranchGraph(createViewer(vp, canvas[0], 10, 0, 0));
         lcl.addBranchGraph(createViewer(vp2, canvas[1], -10, 0, 0)); // MULTI CANVAS
-        CommonsAR.define_Viewer(su, new Point3d(4.0d, 0.0d, 1.0d));
+        Commons.define_Viewer(su, new Point3d(4.0d, 0.0d, 1.0d));
         su.getViewer().getView().setBackClipDistance(1000);
 
         Background bg = new Background();
@@ -126,8 +103,8 @@ public class Demo extends JPanel {
         Transform3D trans2 = new Transform3D();
         trans2.setTranslation(new Vector3f(0, 0, 0));
         MovingPlane plane2 = new MovingPlane("Imports/Objects/Fighter_01.obj", vp2);
-//        objTG.addChild(plane2.objTG); // MULTI
-//        objTG.addChild(plane2);       // MULTI
+        objTG.addChild(plane2.objTG); // MULTI
+        objTG.addChild(plane2);       // MULTI
         canvas[0].addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -221,6 +198,26 @@ public class Demo extends JPanel {
                     sound.setFile("Imports/Sounds/s2.wav");
                     sound.play();
                 }
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                // TODO Auto-generated method stub
+
+            }
+
+
+        });
+        canvas[0].addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                // TODO Auto-generated method stub
+            }
+
+            public void keyPressed(KeyEvent e) {
+                char key = e.getKeyChar();
+
                 if (key == 'j') {
                     trans2.rotY(Math.PI / 20);
                     plane2.objTG.getTransform(plane2.trans3d);
@@ -315,50 +312,13 @@ public class Demo extends JPanel {
 
         sceneBG.addChild(objTG);
         sceneBG.addChild(gunTurret1);
-//        sceneBG.addChild(gunTurret2); // MULTI
-        sceneBG.addChild(CommonsAR.key_Navigation(su));     // allow key navigation
+        sceneBG.addChild(gunTurret2); // MULTI
+        sceneBG.addChild(Commons.key_Navigation(su));     // allow key navigation
         sceneBG.compile();                                   // optimize the BranchGroup
         su.addBranchGraph(sceneBG);                        // attach the scene to SimpleUniverse
 
         orbitControls(canvas[0], su);
 
-
-    }
-
-    public class SoundEffect {
-
-        Clip clip;
-
-        public void setFile(String filename) {
-
-            try {
-                File file = new File(filename);
-                AudioInputStream sound = AudioSystem.getAudioInputStream(file);
-                clip = AudioSystem.getClip();
-                clip.open(sound);
-            } catch (Exception e) {
-
-            }
-        }
-
-        public void play() {
-            clip.setFramePosition(clip.getFramePosition());
-            clip.start();
-
-        }
-
-        public void loop() {
-            clip.setFramePosition(clip.getFramePosition());
-            clip.start();
-            clip.loop(10000);
-
-
-        }
-
-        public void stop() {
-            clip.stop();
-            clip.close();
-        }
 
     }
 
