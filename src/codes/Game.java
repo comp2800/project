@@ -1,7 +1,6 @@
 package codes;
 
 import org.jogamp.java3d.*;
-import org.jogamp.java3d.utils.geometry.Sphere;
 import org.jogamp.java3d.utils.image.TextureLoader;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.java3d.utils.universe.ViewingPlatform;
@@ -20,7 +19,6 @@ import static codes.Commons.createViewer;
 import static codes.Commons.orbitControls;
 
 public class Game extends JPanel {
-    private static final long serialVersionUID = 1L;
     private static BoundingSphere hundredBS = new BoundingSphere(new Point3d(), 100.0);
     private static JFrame frame;
     private static TransformGroup objTG;                              // use 'objTG' to position an object
@@ -42,14 +40,20 @@ public class Game extends JPanel {
         Locale lcl = su.getLocale();
         ViewingPlatform vp = new ViewingPlatform(1);
         ViewingPlatform vp2 = new ViewingPlatform(1);
-        lcl.addBranchGraph(createViewer(vp, canvas[0], 10, 0, 0));
-        lcl.addBranchGraph(createViewer(vp2, canvas[1], -10, 0, 0)); // MULTI CANVAS
+        lcl.addBranchGraph(createViewer(vp, canvas[0]));
+        lcl.addBranchGraph(createViewer(vp2, canvas[1])); // MULTI CANVAS
         Commons.define_Viewer(su, new Point3d(4.0d, 0.0d, 1.0d));
         su.getViewer().getView().setBackClipDistance(1000);
+
+        Background bg = new Background();
+        bg.setImage(new TextureLoader("Imports/Textures/bg2.png", null).getImage());
+        bg.setImageScaleMode(Background.SCALE_FIT_MAX);
+        bg.setApplicationBounds(new BoundingSphere(new Point3d(0, 0, 0), Double.MAX_VALUE));
 
         sound.setFile("Imports/Sounds/background.wav");
         sound.loop();
 
+        sceneBG.addChild(bg);
 
         TurretBehaviour gunTurret1 = new TurretBehaviour(hundredBS);
         Transform3D trans1 = new Transform3D();

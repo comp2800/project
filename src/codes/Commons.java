@@ -125,19 +125,10 @@ public class Commons extends JPanel {
         return tus;
     }
 
-    public static ViewingPlatform createViewer(ViewingPlatform vp, Canvas3D canvas3D,
-                                               double x, double y, double z) {
+    public static ViewingPlatform createViewer(ViewingPlatform vp, Canvas3D canvas3D) {
         // a Canvas3D can only be attached to a single Viewer
         Viewer viewer = new Viewer(canvas3D);                 // attach a Viewer to its canvas
         viewer.getView().setBackClipDistance(10000);
-
-        Point3d center = new Point3d(0, 0, 0);               // define where the eye looks at
-        Vector3d up = new Vector3d(0, 1, 0);                 // define camera's up direction
-        Transform3D viewTM = new Transform3D();
-        Point3d eye = new Point3d(x, y, z);                  // define eye's location
-        viewTM.lookAt(eye, center, up);
-        viewTM.invert();
-        vp.getViewPlatformTransform().setTransform(viewTM);  // set VP with 'viewTG'
 
         // set TG's capabilities to allow KeyNavigatorBehavior modify the Viewer's position
         vp.getViewPlatformTransform().setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
