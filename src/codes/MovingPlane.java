@@ -13,23 +13,20 @@ import java.io.FileNotFoundException;
 import java.util.Iterator;
 
 import static codes.Commons.setApp;
-import static codes.Demo.*;
 
 public class MovingPlane extends Behavior {
     public TransformGroup objTG = new TransformGroup();
     public Transform3D trans3d = new Transform3D();
-    private Transform3D trans = new Transform3D();
-    private WakeupOnElapsedFrames wakeUpCall;
     public Transform3D apache = new Transform3D();
-
-    private Transform3D T3D = new Transform3D();
-
     public ViewingPlatform vp;
     float speed = -0.03f;
+    private Transform3D trans = new Transform3D();
+    private WakeupOnElapsedFrames wakeUpCall;
+    private Transform3D T3D = new Transform3D();
 
     public MovingPlane(String name, ViewingPlatform vp) {
         this.vp = vp;
-        this.trans3d.setScale(1/2f); // SOLO SCALE
+        this.trans3d.setScale(1 / 2f); // SOLO SCALE
         int flags = ObjectFile.RESIZE | ObjectFile.TRIANGULATE | ObjectFile.STRIPIFY;
         ObjectFile f = new ObjectFile(flags, (float) (60.0 * Math.PI / 180.0));
         Scene s = null;

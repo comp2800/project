@@ -7,7 +7,7 @@ import java.io.File;
 
 public class SoundEffect {
 
-    Clip clip;
+    private Clip clip;
 
     public void setFile(String filename) {
 

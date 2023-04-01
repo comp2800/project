@@ -19,49 +19,16 @@ import java.io.IOException;
 import static codes.Commons.createViewer;
 import static codes.Commons.orbitControls;
 
-public class Demo extends JPanel {
-    private Canvas3D[] canvas;
-    private Matrix4d mtrx = new Matrix4d();
-    private static BoundingSphere hundredBS = new BoundingSphere(new Point3d(), 100.0);
+public class Game extends JPanel {
     private static final long serialVersionUID = 1L;
+    private static BoundingSphere hundredBS = new BoundingSphere(new Point3d(), 100.0);
     private static JFrame frame;
     private static TransformGroup objTG;                              // use 'objTG' to position an object
-
     SoundEffect sound = new SoundEffect();
+    private Canvas3D[] canvas;
+    private Matrix4d mtrx = new Matrix4d();
 
-    public static BranchGroup create_Scene() throws IOException {
-        BranchGroup sceneBG = new BranchGroup();           // create the scene's BranchGroup
-        TransformGroup sceneTG = new TransformGroup();     // create the scene's TransformGroup
-        sceneBG.addChild(sceneTG);
-        sceneBG.addChild(Commons.add_Lights(Commons.White, 1));
-        Asteroid[] asteroids = new Asteroid[500];
-        for (Asteroid asteroid : asteroids) {
-            asteroid = new Asteroid();
-            sceneTG.addChild(asteroid);
-            sceneTG.addChild(asteroid.objTG);
-        }
-        sceneTG.addChild(new SolarSystem().create_Object());
-
-        Appearance bgAppearance = new Appearance();
-        Texture bgTexture = new TextureLoader("Imports/Textures/bg2.png", null).getTexture();
-        bgTexture.setBoundaryModeS(Texture.WRAP);
-        bgTexture.setBoundaryModeT(Texture.WRAP);
-        bgAppearance.setTexture(bgTexture);
-
-        PolygonAttributes pa = new PolygonAttributes();
-        pa.setCullFace(PolygonAttributes.CULL_NONE);
-        bgAppearance.setPolygonAttributes(pa);
-
-        Sphere bgSphere = new Sphere(10000f, Sphere.GENERATE_TEXTURE_COORDS, bgAppearance);
-        bgSphere.setCapability(Sphere.ALLOW_BOUNDS_WRITE);
-        bgSphere.setCapability(Sphere.ALLOW_LOCAL_TO_VWORLD_READ);
-
-        sceneTG.addChild(bgSphere);
-
-        return sceneBG;
-    }
-
-    public Demo(BranchGroup sceneBG) {
+    public Game(BranchGroup sceneBG) {
         GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
         canvas = new Canvas3D[2];
         for (int i = 0; i < 2; i++) { // MULTI i=2
@@ -313,6 +280,8 @@ public class Demo extends JPanel {
         sceneBG.addChild(objTG);
         sceneBG.addChild(gunTurret1);
         sceneBG.addChild(gunTurret2); // MULTI
+        sceneBG.addChild(gunTurret1.aimBot);
+        sceneBG.addChild(gunTurret2.aimBot); // MULTI
         sceneBG.addChild(Commons.key_Navigation(su));     // allow key navigation
         sceneBG.compile();                                   // optimize the BranchGroup
         su.addBranchGraph(sceneBG);                        // attach the scene to SimpleUniverse
@@ -322,9 +291,41 @@ public class Demo extends JPanel {
 
     }
 
+    public static BranchGroup create_Scene() throws IOException {
+        BranchGroup sceneBG = new BranchGroup();           // create the scene's BranchGroup
+        TransformGroup sceneTG = new TransformGroup();     // create the scene's TransformGroup
+        sceneBG.addChild(sceneTG);
+        sceneBG.addChild(Commons.add_Lights(Commons.White, 1));
+        Asteroid[] asteroids = new Asteroid[500];
+        for (Asteroid asteroid : asteroids) {
+            asteroid = new Asteroid();
+            sceneTG.addChild(asteroid);
+            sceneTG.addChild(asteroid.objTG);
+        }
+        sceneTG.addChild(new SolarSystem().create_Object());
+
+        Appearance bgAppearance = new Appearance();
+        Texture bgTexture = new TextureLoader("Imports/Textures/bg2.png", null).getTexture();
+        bgTexture.setBoundaryModeS(Texture.WRAP);
+        bgTexture.setBoundaryModeT(Texture.WRAP);
+        bgAppearance.setTexture(bgTexture);
+
+        PolygonAttributes pa = new PolygonAttributes();
+        pa.setCullFace(PolygonAttributes.CULL_NONE);
+        bgAppearance.setPolygonAttributes(pa);
+
+        Sphere bgSphere = new Sphere(10000f, Sphere.GENERATE_TEXTURE_COORDS, bgAppearance);
+        bgSphere.setCapability(Sphere.ALLOW_BOUNDS_WRITE);
+        bgSphere.setCapability(Sphere.ALLOW_LOCAL_TO_VWORLD_READ);
+
+        sceneTG.addChild(bgSphere);
+
+        return sceneBG;
+    }
+
     public static void main(String[] args) throws IOException {
         frame = new JFrame();
-        frame.getContentPane().add(new Demo(create_Scene()));  // create an instance of the class
+        frame.getContentPane().add(new Game(create_Scene()));  // create an instance of the class
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }

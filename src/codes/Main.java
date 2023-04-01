@@ -1,15 +1,11 @@
 package codes;
 
-import java.awt.event.ActionEvent;
 import javax.swing.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 
-import static codes.Demo.create_Scene;
+import static codes.Game.create_Scene;
 
 public class Main implements ActionListener {
 
@@ -19,7 +15,7 @@ public class Main implements ActionListener {
 
     Main() throws IOException {
         JFrame f = new JFrame("Flight Simulator");
-        f.setSize(1200, 800);
+        f.setSize(1920, 1080);
 
         gameState = new GameState();
 
@@ -36,7 +32,7 @@ public class Main implements ActionListener {
         jmFile.add(jmiExit);
         jmb.add(jmFile);
 
-        f.getContentPane().add(new Demo(create_Scene()));
+        f.getContentPane().add(new Game(create_Scene()));
 
         jmiNewGame.addActionListener((ActionEvent e) -> {
             f.dispose(); // dispose of the current frame
@@ -70,13 +66,13 @@ public class Main implements ActionListener {
         f.setVisible(true);
     }
 
+    public static void main(String args[]) throws IOException {
+        new Main();
+    }
+
     public void actionPerformed(ActionEvent ae) {
         String comStr = ae.getActionCommand();
         System.out.println(comStr + " Selected");
-    }
-
-    public static void main(String args[]) throws IOException {
-        new Main();
     }
 
     private class GameState {

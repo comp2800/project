@@ -1,23 +1,21 @@
 package codes;
 
-import org.jogamp.java3d.*;
-import org.jogamp.java3d.utils.geometry.*;
-import org.jogamp.java3d.utils.image.TextureLoader;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.Node;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.TransformGroup;
+import org.jogamp.java3d.utils.geometry.Primitive;
+import org.jogamp.java3d.utils.geometry.Sphere;
 import org.jogamp.vecmath.AxisAngle4f;
-import org.jogamp.vecmath.Point3f;
 import org.jogamp.vecmath.Vector3f;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Random;
 
-import static codes.Commons.*;
+import static codes.Commons.addRotation;
+import static codes.Commons.setApp;
 
 public abstract class Cosmos {
     protected abstract Node create_Object() throws IOException;
-
-    public abstract Node position_Object() throws IOException;
 
 }
 
@@ -39,9 +37,6 @@ class Planet extends Cosmos {
         return planetTG;
     }
 
-    public Node position_Object() throws IOException {
-        return create_Object();
-    }
 }
 
 class SysPlanet extends Cosmos {
@@ -69,9 +64,6 @@ class SysPlanet extends Cosmos {
         return TG;
     }
 
-    public Node position_Object() throws IOException {
-        return create_Object();
-    }
 }
 
 class Earth extends Cosmos {
@@ -80,9 +72,6 @@ class Earth extends Cosmos {
         return new SysPlanet("Imports/Textures/SolarSystem/Earth.jpg", 24 * 10000, 1f, 1.50f * 15).create_Object();
     }
 
-    public Node position_Object() throws IOException {
-        return create_Object();
-    }
 }
 
 class Mercury extends Cosmos {
@@ -91,9 +80,6 @@ class Mercury extends Cosmos {
         return new SysPlanet("Imports/Textures/SolarSystem/Mercury.jpg", 1392 * 10000, 1 / 3f, .58f * 10).create_Object();
     }
 
-    public Node position_Object() throws IOException {
-        return create_Object();
-    }
 }
 
 class Venus extends Cosmos {
@@ -102,9 +88,6 @@ class Venus extends Cosmos {
         return new SysPlanet("Imports/Textures/SolarSystem/Venus.jpg", 5832 * 10000, 0.9f, 1.08f * 10).create_Object();
     }
 
-    public Node position_Object() throws IOException {
-        return create_Object();
-    }
 }
 
 class Mars extends Cosmos {
@@ -113,9 +96,6 @@ class Mars extends Cosmos {
         return new SysPlanet("Imports/Textures/SolarSystem/Mars.jpg", 24 * 10000, 1f, 2.28f * 20).create_Object();
     }
 
-    public Node position_Object() throws IOException {
-        return create_Object();
-    }
 }
 
 class Jupiter extends Cosmos {
@@ -124,9 +104,6 @@ class Jupiter extends Cosmos {
         return new SysPlanet("Imports/Textures/SolarSystem/Jupiter.jpg", 9 * 10000, 11f, 7.78f * 10).create_Object();
     }
 
-    public Node position_Object() throws IOException {
-        return create_Object();
-    }
 }
 
 class Saturn extends Cosmos {
@@ -135,9 +112,6 @@ class Saturn extends Cosmos {
         return new SysPlanet("Imports/Textures/SolarSystem/Saturn.jpg", 10 * 10000, 9f, 14.3f * 10).create_Object();
     }
 
-    public Node position_Object() throws IOException {
-        return create_Object();
-    }
 }
 
 class Uranus extends Cosmos {
@@ -146,9 +120,6 @@ class Uranus extends Cosmos {
         return new SysPlanet("Imports/Textures/SolarSystem/Uranus.jpg", 17 * 10000, 4f, 28f * 10).create_Object();
     }
 
-    public Node position_Object() throws IOException {
-        return create_Object();
-    }
 }
 
 class Neptune extends Cosmos {
@@ -157,19 +128,12 @@ class Neptune extends Cosmos {
         return new SysPlanet("Imports/Textures/SolarSystem/Neptune.jpg", 16 * 10000, 3.75f, 45f * 10).create_Object();
     }
 
-    public Node position_Object() throws IOException {
-        return create_Object();
-    }
 }
 
 class Sun extends Cosmos {
 
     protected Node create_Object() throws IOException {
         return new Planet("Imports/Textures/SolarSystem/Sun.jpg", 15f).create_Object();
-    }
-
-    public Node position_Object() throws IOException {
-        return create_Object();
     }
 }
 
@@ -216,7 +180,4 @@ class SolarSystem extends Cosmos {
         return sunTG;
     }
 
-    public Node position_Object() throws IOException {
-        return create_Object();
-    }
 }
