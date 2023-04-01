@@ -47,16 +47,8 @@ public class Game extends JPanel {
         Commons.define_Viewer(su, new Point3d(4.0d, 0.0d, 1.0d));
         su.getViewer().getView().setBackClipDistance(1000);
 
-        Background bg = new Background();
-        bg.setImage(new TextureLoader("Imports/Textures/bg2.png", null).getImage());
-        bg.setImageScaleMode(Background.SCALE_FIT_MAX);
-        bg.setApplicationBounds(new BoundingSphere(new Point3d(0, 0, 0), Double.MAX_VALUE));
-
         sound.setFile("Imports/Sounds/background.wav");
         sound.loop();
-
-
-        sceneBG.addChild(bg);
 
 
         TurretBehaviour gunTurret1 = new TurretBehaviour(hundredBS);
@@ -303,22 +295,7 @@ public class Game extends JPanel {
             sceneTG.addChild(asteroid.objTG);
         }
         sceneTG.addChild(new SolarSystem().create_Object());
-
-        Appearance bgAppearance = new Appearance();
-        Texture bgTexture = new TextureLoader("Imports/Textures/bg2.png", null).getTexture();
-        bgTexture.setBoundaryModeS(Texture.WRAP);
-        bgTexture.setBoundaryModeT(Texture.WRAP);
-        bgAppearance.setTexture(bgTexture);
-
-        PolygonAttributes pa = new PolygonAttributes();
-        pa.setCullFace(PolygonAttributes.CULL_NONE);
-        bgAppearance.setPolygonAttributes(pa);
-
-        Sphere bgSphere = new Sphere(10000f, Sphere.GENERATE_TEXTURE_COORDS, bgAppearance);
-        bgSphere.setCapability(Sphere.ALLOW_BOUNDS_WRITE);
-        bgSphere.setCapability(Sphere.ALLOW_LOCAL_TO_VWORLD_READ);
-
-        sceneTG.addChild(bgSphere);
+        sceneTG.addChild(new Space("Imports/Textures/bg2.png").setApp());
 
         return sceneBG;
     }
