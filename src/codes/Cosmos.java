@@ -39,6 +39,18 @@ class Planet extends Cosmos {
 
 }
 
+class Sun extends Planet {
+
+    public Sun() {
+        super("Imports/Textures/SolarSystem/Sun.jpg", 15f);
+    }
+
+    protected Node create_Object() throws IOException {
+        return super.create_Object();
+    }
+}
+
+
 class SysPlanet extends Planet {
     private final int speed;
     private final float distance;
@@ -156,17 +168,6 @@ class Neptune extends SysPlanet {
         return super.create_Object();
     }
 
-}
-
-class Sun extends Planet {
-
-    public Sun() {
-        super("Imports/Textures/SolarSystem/Sun.jpg", 15f);
-    }
-
-    protected Node create_Object() throws IOException {
-        return super.create_Object();
-    }
 }
 
 class SolarSystem extends Cosmos {

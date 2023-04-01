@@ -299,7 +299,7 @@ public class Game extends JPanel {
             sceneTG.addChild(asteroid.objTG);
         }
         sceneTG.addChild(new SolarSystem().create_Object());
-        sceneTG.addChild(new Space("Imports/Textures/bg2.png").setApp());
+        sceneTG.addChild(new Space("Imports/Textures/bg2.png").setBg());
 
         return sceneBG;
     }
