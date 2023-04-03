@@ -9,17 +9,14 @@ import java.util.Iterator;
 import static codes.Commons.hundredBS;
 
 public class TurretBehaviour extends Behavior {
+    public Alpha alpha = new Alpha(1, 500);
+    public Transform3D trans33 = new Transform3D();
     public float speed = -0.03f;
-
-    public static Alpha alpha = new Alpha(1, 500);
     public TransformGroup aimBot = new TransformGroup();
-    private TransformGroup gggg = new TransformGroup();
+    public BranchGroup ammoBG;
     private WakeupOnElapsedFrames wakeUpCall;
     private Transform3D trans3 = new Transform3D();
-    public static Transform3D trans33 = new Transform3D();
 
-    private Alpha bigAlpha;
-    public BranchGroup ammoBG;
     public TurretBehaviour(Bounds bounds) {
         ammoBG = new BranchGroup();
         Appearance app = Commons.obj_Appearance(Commons.Green);
@@ -32,7 +29,6 @@ public class TurretBehaviour extends Behavior {
         Transform3D axis = new Transform3D();
         axis.rotY(Math.PI / 2);
         PositionInterpolator getter = new PositionInterpolator(alpha, turretTG, axis, 0.0f, 50.0f);
-        bigAlpha = alpha;
         getter.setSchedulingBounds(hundredBS);
         ammoBG.addChild(getter);
         aimBot.addChild(ammoBG);
@@ -40,10 +36,12 @@ public class TurretBehaviour extends Behavior {
         aimBot.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
         this.setSchedulingBounds(bounds);
     }
+
     public void initialize() {
         wakeUpCall = new WakeupOnElapsedFrames(0);
         wakeupOn(wakeUpCall);
     }
+
     public void processStimulus(Iterator<WakeupCriterion> criteria) {
         trans3.set(new Vector3d(0.0f, 0.0f, speed));
         trans33.mul(trans3);

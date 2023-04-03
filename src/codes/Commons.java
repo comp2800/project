@@ -4,9 +4,6 @@ import org.jogamp.java3d.*;
 import org.jogamp.java3d.loaders.Scene;
 import org.jogamp.java3d.loaders.objectfile.ObjectFile;
 import org.jogamp.java3d.utils.behaviors.keyboard.KeyNavigatorBehavior;
-import org.jogamp.java3d.utils.behaviors.mouse.MouseBehavior;
-import org.jogamp.java3d.utils.behaviors.mouse.MouseRotate;
-import org.jogamp.java3d.utils.behaviors.mouse.MouseWheelZoom;
 import org.jogamp.java3d.utils.behaviors.vp.OrbitBehavior;
 import org.jogamp.java3d.utils.geometry.Box;
 import org.jogamp.java3d.utils.image.TextureLoader;
@@ -21,9 +18,6 @@ import java.io.IOException;
 
 public class Commons extends JPanel {
 
-    private static final long serialVersionUID = 1L;
-    private static JFrame frame;
-
     public final static Color3f Red = new Color3f(1.0f, 0.0f, 0.0f);
     public final static Color3f Green = new Color3f(0.0f, 1.0f, 0.0f);
     public final static Color3f Blue = new Color3f(0.0f, 0.0f, 1.0f);
@@ -37,10 +31,30 @@ public class Commons extends JPanel {
     public final static Color3f[] clr_list = {Blue, Green, Red, Yellow,
             Cyan, Orange, Magenta, Grey};
     public final static int clr_num = 8;
-    private static Color3f[] mtl_clrs = {White, Grey, Black};
-
     public final static BoundingSphere hundredBS = new BoundingSphere(new Point3d(), 100.0);
     public final static BoundingSphere twentyBS = new BoundingSphere(new Point3d(), 20.0);
+    private static final long serialVersionUID = 1L;
+    private static JFrame frame;
+    private static Color3f[] mtl_clrs = {White, Grey, Black};
+
+    /* a constructor to set up for the application */
+    public Commons(BranchGroup sceneBG) {
+        GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
+        Canvas3D canvas = new Canvas3D(config);
+
+        SimpleUniverse su = new SimpleUniverse(canvas);    // create a SimpleUniverse
+        define_Viewer(su, new Point3d(1.0d, 1.0d, 4.0d));  // set the viewer's location
+
+        sceneBG.addChild(add_Lights(White, 1));
+        sceneBG.addChild(key_Navigation(su));              // allow key navigation
+        sceneBG.compile();                                   // optimize the BranchGroup
+        su.addBranchGraph(sceneBG);                        // attach the scene to SimpleUniverse
+
+        setLayout(new BorderLayout());
+        add("Center", canvas);
+        frame.setSize(800, 800);                           // set the size of the JFrame
+        frame.setVisible(true);
+    }
 
     /* Loads blender obj file and returns BranchGroup */
     public static BranchGroup f_load(String path) throws IOException {
@@ -111,31 +125,21 @@ public class Commons extends JPanel {
         return tus;
     }
 
-    public static ViewingPlatform createViewer(ViewingPlatform vp, Canvas3D canvas3D,
-                                               double x, double y, double z) {
+    public static ViewingPlatform createViewer(ViewingPlatform vp, Canvas3D canvas3D) {
         // a Canvas3D can only be attached to a single Viewer
-        Viewer viewer = new Viewer( canvas3D );	             // attach a Viewer to its canvas
+        Viewer viewer = new Viewer(canvas3D);                 // attach a Viewer to its canvas
         viewer.getView().setBackClipDistance(10000);
 
-        Point3d center = new Point3d(0, 0, 0);               // define where the eye looks at
-        Vector3d up = new Vector3d(0, 1, 0);                 // define camera's up direction
-        Transform3D viewTM = new Transform3D();
-        Point3d eye = new Point3d(x, y, z);                  // define eye's location
-        viewTM.lookAt(eye, center, up);
-        viewTM.invert();
-        vp.getViewPlatformTransform().setTransform(viewTM);  // set VP with 'viewTG'
-
         // set TG's capabilities to allow KeyNavigatorBehavior modify the Viewer's position
-        vp.getViewPlatformTransform( ).setCapability( TransformGroup.ALLOW_TRANSFORM_WRITE );
-        vp.getViewPlatformTransform( ).setCapability( TransformGroup.ALLOW_TRANSFORM_READ );
-        KeyNavigatorBehavior key = new KeyNavigatorBehavior( vp.getViewPlatformTransform( ) );
-        key.setSchedulingBounds( new BoundingSphere() );          // enable viewer navigation
-        key.setEnable( false );
-        vp.addChild( key );                                   // add KeyNavigatorBehavior to VP
-        viewer.setViewingPlatform( vp );                      // set VP for the Viewer
+        vp.getViewPlatformTransform().setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+        vp.getViewPlatformTransform().setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+        KeyNavigatorBehavior key = new KeyNavigatorBehavior(vp.getViewPlatformTransform());
+        key.setSchedulingBounds(new BoundingSphere());          // enable viewer navigation
+        key.setEnable(false);
+        vp.addChild(key);                                   // add KeyNavigatorBehavior to VP
+        viewer.setViewingPlatform(vp);                      // set VP for the Viewer
         return vp;
     }
-
 
     /* a function to create a rotation behavior and refer it to 'my_TG' */
     public static RotationInterpolator rotate_Behavior(int r_num, TransformGroup rotTG) {
@@ -211,7 +215,6 @@ public class Commons extends JPanel {
         return keyNavBeh;
     }
 
-
     /* a function to build the content branch and attach to 'scene' */
     public static BranchGroup create_Scene() {
         BranchGroup sceneBG = new BranchGroup();
@@ -221,25 +224,6 @@ public class Commons extends JPanel {
 
         sceneBG.addChild(sceneTG);
         return sceneBG;
-    }
-
-    /* a constructor to set up for the application */
-    public Commons(BranchGroup sceneBG) {
-        GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
-        Canvas3D canvas = new Canvas3D(config);
-
-        SimpleUniverse su = new SimpleUniverse(canvas);    // create a SimpleUniverse
-        define_Viewer(su, new Point3d(1.0d, 1.0d, 4.0d));  // set the viewer's location
-
-        sceneBG.addChild(add_Lights(White, 1));
-        sceneBG.addChild(key_Navigation(su));              // allow key navigation
-        sceneBG.compile();                                   // optimize the BranchGroup
-        su.addBranchGraph(sceneBG);                        // attach the scene to SimpleUniverse
-
-        setLayout(new BorderLayout());
-        add("Center", canvas);
-        frame.setSize(800, 800);                           // set the size of the JFrame
-        frame.setVisible(true);
     }
 
     public static void main(String[] args) {
