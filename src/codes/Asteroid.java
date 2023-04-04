@@ -30,12 +30,13 @@ public class Asteroid extends Behavior {
         mySwitch.addChild(BG);
         TG.addChild(pebbles);
         TG.addChild(pebbles.TG);
+        pebbles.TG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE );
         TG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         mySwitch.addChild(TG);
         mySwitch.setWhichChild(0);
         objTG.addChild(mySwitch);
         objTG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-        this.setEnable(false);
+        this.setEnable(true);
         this.setSchedulingBounds(new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 10000));
     }
 
@@ -47,20 +48,20 @@ public class Asteroid extends Behavior {
     public void processStimulus(Iterator<WakeupCriterion> criteria) {
 
         float t = 0.0005F;
-        switch (trajectory) {
-            case 0 -> trans.setTranslation(new Vector3f(t, 0, 0));
-            case 1 -> trans.setTranslation(new Vector3f(0, t, 0));
-            case 2 -> trans.setTranslation(new Vector3f(0, 0, t));
-        }
-
+//        switch (trajectory) {
+//            case 0 -> trans.setTranslation(new Vector3f(t, 0, 0));
+//            case 1 -> trans.setTranslation(new Vector3f(0, t, 0));
+//            case 2 -> trans.setTranslation(new Vector3f(0, 0, t));
+//        }
+        pebbles.TG.setTransform(this.trans3d);
         trans3d.mul(trans);
         objTG.setTransform(trans3d);
         wakeupOn(wakeUpCall);
     }
 
     public void boom() {
-        pebbles.TG.setTransform(this.trans3d);
         mySwitch.setWhichChild(1);
+        this.setEnable(false);
     }
 
 
