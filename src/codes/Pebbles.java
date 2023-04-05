@@ -21,13 +21,12 @@ public class Pebbles extends Behavior {
     private WakeupOnElapsedFrames wakeUpCall;
 
     public Pebbles() throws IOException {
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 10; i++) {
             trajectories[i] = new Random().nextInt(3);
             BranchGroup BG = Commons.f_load("Imports/Objects/Asteroid.obj");
             Shape3D shape = (Shape3D) BG.getChild(0);
             shape.setAppearance(setApp("Imports/Textures/Asteroids/tex" + (new Random().nextInt(5) + 1) + ".jpg"));
             Transform3D trans3d = new Transform3D();
-            trans3d.setScale(1 / 10f);
             trans3d.rotX(Math.PI / (new Random().nextInt(20) + 1));
             trans3d.rotY(Math.PI / (new Random().nextInt(20) + 1));
             trans3d.rotZ(Math.PI / (new Random().nextInt(20) + 1));
@@ -47,8 +46,8 @@ public class Pebbles extends Behavior {
 
     public void processStimulus(Iterator<WakeupCriterion> criteria) {
 
-        float t = 0.05F;
-        for (int i = 0; i < 50; i++) {
+        float t = 0.005F;
+        for (int i = 0; i < 10; i++) {
             switch (trajectories[i]) {
                 case 0 -> trans.setTranslation(new Vector3f(t, 0, 0));
                 case 1 -> trans.setTranslation(new Vector3f(0, t, 0));
@@ -58,6 +57,7 @@ public class Pebbles extends Behavior {
             Transform3D T3D = new Transform3D();
             pebbleTG.getTransform(T3D);
             T3D.mul(trans);
+            T3D.setScale(1f/10);
             pebbleTG.setTransform(T3D);
         }
         wakeupOn(wakeUpCall);

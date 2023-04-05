@@ -21,21 +21,24 @@ public class Asteroid extends Behavior {
     private final Pebbles pebbles = new Pebbles();
     private final Switch mySwitch;
 
+    public Shape3D shape;
+
     public Asteroid() throws IOException {
         mySwitch = new Switch();
         mySwitch.setCapability(Switch.ALLOW_SWITCH_WRITE);
         BranchGroup BG = Commons.f_load("Imports/Objects/Asteroid.obj");
-        Shape3D shape = (Shape3D) BG.getChild(0);
+        shape = (Shape3D) BG.getChild(0);
         shape.setAppearance(setApp("Imports/Textures/Asteroids/tex" + (new Random().nextInt(5) + 1) + ".jpg"));
         mySwitch.addChild(BG);
         TG.addChild(pebbles);
         TG.addChild(pebbles.TG);
-        pebbles.TG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE );
+        pebbles.TG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         TG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         mySwitch.addChild(TG);
         mySwitch.setWhichChild(0);
         objTG.addChild(mySwitch);
         objTG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+        objTG.setCollidable(true);
         this.setEnable(true);
         this.setSchedulingBounds(new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 10000));
     }
@@ -47,12 +50,12 @@ public class Asteroid extends Behavior {
 
     public void processStimulus(Iterator<WakeupCriterion> criteria) {
 
-        float t = 0.0005F;
-//        switch (trajectory) {
-//            case 0 -> trans.setTranslation(new Vector3f(t, 0, 0));
-//            case 1 -> trans.setTranslation(new Vector3f(0, t, 0));
-//            case 2 -> trans.setTranslation(new Vector3f(0, 0, t));
-//        }
+        float t = 0.005F;
+        switch (trajectory) {
+            case 0 -> trans.setTranslation(new Vector3f(t, 0, 0));
+            case 1 -> trans.setTranslation(new Vector3f(0, t, 0));
+            case 2 -> trans.setTranslation(new Vector3f(0, 0, t));
+        }
         pebbles.TG.setTransform(this.trans3d);
         trans3d.mul(trans);
         objTG.setTransform(trans3d);
