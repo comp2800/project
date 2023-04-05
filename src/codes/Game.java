@@ -1,15 +1,12 @@
 package codes;
 
-import org.jdesktop.j3d.examples.collision.CollisionDetector;
 import org.jogamp.java3d.*;
-import org.jogamp.java3d.utils.geometry.Sphere;
 import org.jogamp.java3d.utils.image.TextureLoader;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.java3d.utils.universe.ViewingPlatform;
 import org.jogamp.vecmath.Matrix4d;
 import org.jogamp.vecmath.Point3d;
 import org.jogamp.vecmath.Vector3d;
-import org.jogamp.vecmath.Vector3f;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,23 +18,13 @@ import static codes.Commons.createViewer;
 import static codes.Commons.orbitControls;
 
 public class Game extends JPanel {
-    private static BoundingSphere hundredBS = new BoundingSphere(new Point3d(), 100.0);
     private static JFrame frame;
     private static TransformGroup objTG;                              // use 'objTG' to position an object
     SoundEffect sound = new SoundEffect();
     private Canvas3D[] canvas;
     private Matrix4d mtrx = new Matrix4d();
-    private static Asteroid asteroid;
 
-    static {
-        try {
-            asteroid = new Asteroid();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Game(BranchGroup sceneBG) throws IOException {
+    public Game(BranchGroup sceneBG) {
         GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
         canvas = new Canvas3D[2];
         for (int i = 0; i < 2; i++) { // MULTI i=2
@@ -61,23 +48,23 @@ public class Game extends JPanel {
         bg.setImageScaleMode(Background.SCALE_FIT_MAX);
         bg.setApplicationBounds(new BoundingSphere(new Point3d(0, 0, 0), Double.MAX_VALUE));
 
-//        sound.setFile("Imports/Sounds/background.wav");
-//        sound.loop();
+        sound.setFile("Imports/Sounds/background.wav");
+        sound.loop();
 
         sceneBG.addChild(bg);
 
 
-        TurretBehaviour gunTurret1 = new TurretBehaviour(hundredBS);
+        TurretBehaviour gunTurret1 = new TurretBehaviour();
         Transform3D trans1 = new Transform3D();
         MovingPlane plane1 = new MovingPlane("Imports/Objects/Fighter_01.obj", vp);
         objTG.addChild(plane1.objTG);
         objTG.addChild(plane1);
 
-        TurretBehaviour gunTurret2 = new TurretBehaviour(hundredBS);
+        TurretBehaviour gunTurret2 = new TurretBehaviour();
         Transform3D trans2 = new Transform3D();
         MovingPlane plane2 = new MovingPlane("Imports/Objects/Fighter_01.obj", vp2);
-//        objTG.addChild(plane2.objTG); // MULTI
-//        objTG.addChild(plane2);       // MULTI
+        objTG.addChild(plane2.objTG); // MULTI
+        objTG.addChild(plane2);       // MULTI
         canvas[0].addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -94,11 +81,9 @@ public class Game extends JPanel {
                     plane1.trans3d.mul(trans1);
                     plane1.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
                     plane1.objTG.setTransform(plane1.trans3d);
-                    gunTurret1.aimBot.getTransform(gunTurret1.trans33);
-                    gunTurret1.trans33.get(mtrx);
-                    gunTurret1.trans33.mul(trans1);
-                    gunTurret1.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-                    gunTurret1.aimBot.setTransform(gunTurret1.trans33);
+                    Transform3D T3D = new Transform3D();
+                    plane1.objTG.getTransform(T3D);
+                    gunTurret1.aimBot.setTransform(T3D);
 
                 }
 
@@ -109,11 +94,9 @@ public class Game extends JPanel {
                     plane1.trans3d.mul(trans1);
                     plane1.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
                     plane1.objTG.setTransform(plane1.trans3d);
-                    gunTurret1.aimBot.getTransform(gunTurret1.trans33);
-                    gunTurret1.trans33.get(mtrx);
-                    gunTurret1.trans33.mul(trans1);
-                    gunTurret1.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-                    gunTurret1.aimBot.setTransform(gunTurret1.trans33);
+                    Transform3D T3D = new Transform3D();
+                    plane1.objTG.getTransform(T3D);
+                    gunTurret1.aimBot.setTransform(T3D);
                 }
 
 
@@ -124,11 +107,9 @@ public class Game extends JPanel {
                     plane1.trans3d.mul(trans1);
                     plane1.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
                     plane1.objTG.setTransform(plane1.trans3d);
-                    gunTurret1.aimBot.getTransform(gunTurret1.trans33);
-                    gunTurret1.trans33.get(mtrx);
-                    gunTurret1.trans33.mul(trans1);
-                    gunTurret1.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-                    gunTurret1.aimBot.setTransform(gunTurret1.trans33);
+                    Transform3D T3D = new Transform3D();
+                    plane1.objTG.getTransform(T3D);
+                    gunTurret1.aimBot.setTransform(T3D);
                 }
 
                 if (key == 's') {
@@ -138,33 +119,45 @@ public class Game extends JPanel {
                     plane1.trans3d.mul(trans1);
                     plane1.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
                     plane1.objTG.setTransform(plane1.trans3d);
-                    gunTurret1.aimBot.getTransform(gunTurret1.trans33);
-                    gunTurret1.trans33.get(mtrx);
-                    gunTurret1.trans33.mul(trans1);
-                    gunTurret1.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-                    gunTurret1.aimBot.setTransform(gunTurret1.trans33);
+                    Transform3D T3D = new Transform3D();
+                    plane1.objTG.getTransform(T3D);
+                    gunTurret1.aimBot.setTransform(T3D);
                 }
                 if (key == 'q') {
                     if (plane1.speed <= -1) {
                         plane1.speed += 0.005;
+                        Transform3D T3D = new Transform3D();
+                        plane1.objTG.getTransform(T3D);
+                        gunTurret1.aimBot.setTransform(T3D);
 //                        plane1.speed += 5; // SOLO HYPERSPACE
                         System.out.println("You Are Stalling");
                     } else {
                         plane1.speed += 0.001;
+                        Transform3D T3D = new Transform3D();
+                        plane1.objTG.getTransform(T3D);
+                        gunTurret1.aimBot.setTransform(T3D);
 //                        plane1.speed += 1; // SOLO MACH 10
                     }
                 }
                 if (key == 'e') {
                     if (plane1.speed <= 0) {
                         plane1.speed -= 0.001;
+                        Transform3D T3D = new Transform3D();
+                        plane1.objTG.getTransform(T3D);
+                        gunTurret1.aimBot.setTransform(T3D);
 //                        plane1.speed -= 1; // SOLO CRASH
                     } else {
                         plane1.speed = 0;
-
+                        Transform3D T3D = new Transform3D();
+                        plane1.objTG.getTransform(T3D);
+                        gunTurret1.aimBot.setTransform(T3D);
                     }
                 }
                 if (plane1.speed > 0) {
                     plane1.speed = 0;
+                    Transform3D T3D = new Transform3D();
+                    plane1.objTG.getTransform(T3D);
+                    gunTurret1.aimBot.setTransform(T3D);
                 }
                 if (key == 'f') {
                     gunTurret1.alpha.setStartTime(System.currentTimeMillis());
@@ -198,11 +191,9 @@ public class Game extends JPanel {
                     plane2.trans3d.mul(trans2);
                     plane2.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
                     plane2.objTG.setTransform(plane2.trans3d);
-                    gunTurret2.aimBot.getTransform(gunTurret2.trans33);
-                    gunTurret2.trans33.get(mtrx);
-                    gunTurret2.trans33.mul(trans2);
-                    gunTurret2.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-                    gunTurret2.aimBot.setTransform(gunTurret2.trans33);
+                    Transform3D T3D = new Transform3D();
+                    plane2.objTG.getTransform(T3D);
+                    gunTurret2.aimBot.setTransform(T3D);
                 }
 
                 if (key == 'l') {
@@ -212,11 +203,9 @@ public class Game extends JPanel {
                     plane2.trans3d.mul(trans2);
                     plane2.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
                     plane2.objTG.setTransform(plane2.trans3d);
-                    gunTurret2.aimBot.getTransform(gunTurret2.trans33);
-                    gunTurret2.trans33.get(mtrx);
-                    gunTurret2.trans33.mul(trans2);
-                    gunTurret2.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-                    gunTurret2.aimBot.setTransform(gunTurret2.trans33);
+                    Transform3D T3D = new Transform3D();
+                    plane2.objTG.getTransform(T3D);
+                    gunTurret2.aimBot.setTransform(T3D);
                 }
 
                 if (key == 'k') {
@@ -226,11 +215,9 @@ public class Game extends JPanel {
                     plane2.trans3d.mul(trans2);
                     plane2.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
                     plane2.objTG.setTransform(plane2.trans3d);
-                    gunTurret2.aimBot.getTransform(gunTurret2.trans33);
-                    gunTurret2.trans33.get(mtrx);
-                    gunTurret2.trans33.mul(trans2);
-                    gunTurret2.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-                    gunTurret2.aimBot.setTransform(gunTurret2.trans33);
+                    Transform3D T3D = new Transform3D();
+                    plane2.objTG.getTransform(T3D);
+                    gunTurret2.aimBot.setTransform(T3D);
                 }
 
                 if (key == 'i') {
@@ -240,32 +227,45 @@ public class Game extends JPanel {
                     plane2.trans3d.mul(trans2);
                     plane2.trans3d.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
                     plane2.objTG.setTransform(plane2.trans3d);
-                    gunTurret2.aimBot.getTransform(gunTurret2.trans33);
-                    gunTurret2.trans33.get(mtrx);
-                    gunTurret2.trans33.mul(trans2);
-                    gunTurret2.trans33.setTranslation(new Vector3d(mtrx.m03, mtrx.m13, mtrx.m23));
-                    gunTurret2.aimBot.setTransform(gunTurret2.trans33);
+                    Transform3D T3D = new Transform3D();
+                    plane2.objTG.getTransform(T3D);
+                    gunTurret2.aimBot.setTransform(T3D);
                 }
 
                 if (key == 'u') {
                     if (plane2.speed <= -1) {
                         plane2.speed += 0.005;
+                        Transform3D T3D = new Transform3D();
+                        plane2.objTG.getTransform(T3D);
+                        gunTurret2.aimBot.setTransform(T3D);
                         System.out.println("You Are Stalling");
                     } else {
                         plane2.speed += 0.001;
+                        Transform3D T3D = new Transform3D();
+                        plane2.objTG.getTransform(T3D);
+                        gunTurret2.aimBot.setTransform(T3D);
                     }
                 }
 
                 if (key == 'o') {
                     if (plane2.speed <= 0) {
                         plane2.speed -= 0.001;
+                        Transform3D T3D = new Transform3D();
+                        plane2.objTG.getTransform(T3D);
+                        gunTurret2.aimBot.setTransform(T3D);
                     } else {
                         plane2.speed = 0;
+                        Transform3D T3D = new Transform3D();
+                        plane2.objTG.getTransform(T3D);
+                        gunTurret2.aimBot.setTransform(T3D);
 
                     }
                 }
                 if (plane2.speed > 0) {
                     plane2.speed = 0;
+                    Transform3D T3D = new Transform3D();
+                    plane2.objTG.getTransform(T3D);
+                    gunTurret2.aimBot.setTransform(T3D);
                 }
                 if (key == ';') {
                     gunTurret2.alpha.setStartTime(System.currentTimeMillis());
@@ -284,8 +284,6 @@ public class Game extends JPanel {
         });
 
         sceneBG.addChild(objTG);
-        sceneBG.addChild(gunTurret1);
-        sceneBG.addChild(gunTurret2); // MULTI
         sceneBG.addChild(gunTurret1.aimBot);
         sceneBG.addChild(gunTurret2.aimBot); // MULTI
         sceneBG.addChild(Commons.key_Navigation(su));     // allow key navigation
@@ -302,22 +300,18 @@ public class Game extends JPanel {
         TransformGroup sceneTG = new TransformGroup();     // create the scene's TransformGroup
         sceneBG.addChild(sceneTG);
         sceneBG.addChild(Commons.add_Lights(Commons.White, 1));
-//        Asteroid[] asteroids = new Asteroid[500];
-//        for (Asteroid aster : asteroids) {
-//            aster = new Asteroid();
-//            sceneTG.addChild(aster);
-//            sceneTG.addChild(aster.objTG);
-//        }
-        AsteroidCollisionDetector cdGroup = new AsteroidCollisionDetector(asteroid);
-        cdGroup.setSchedulingBounds(Commons.twentyBS);
-        sceneTG.addChild(cdGroup);
-//        sceneTG.addChild(new Sphere(1.4f, Commons.obj_Appearance(Commons.Green)));
-        Transform3D td = new Transform3D();
-        td.setTranslation(new Vector3f(0,4,0));
-        TransformGroup tg = new TransformGroup(td);
-        tg.addChild(asteroid);
-        tg.addChild(asteroid.objTG);
-        sceneTG.addChild(tg);
+        Asteroid[] asteroids = new Asteroid[1];
+        for (Asteroid asteroid : asteroids) {
+            asteroid = new Asteroid();
+            sceneTG.addChild(asteroid);
+            sceneTG.addChild(asteroid.objTG);
+            AsteroidCollisionDetector cdGroup = new AsteroidCollisionDetector(asteroid);
+            cdGroup.setSchedulingBounds(Commons.twentyBS);
+            sceneTG.addChild(cdGroup);
+        }
+
+        sceneTG.addChild(new SolarSystem().create_Object());
+
         sceneTG.addChild(new Space("Imports/Textures/bg2.png").setApp());
 
         return sceneBG;

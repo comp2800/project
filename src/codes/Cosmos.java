@@ -56,7 +56,7 @@ class SysPlanet extends Planet {
     private final float distance;
 
     public SysPlanet(String texture, int speed, float scale, float distance) {
-        super(texture,scale);
+        super(texture, scale);
         this.speed = speed;
         this.distance = distance;
     }

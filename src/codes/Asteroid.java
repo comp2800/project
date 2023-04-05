@@ -15,23 +15,24 @@ public class Asteroid extends Behavior {
     private final Transform3D trans3d = new Transform3D();
     private final Transform3D trans = new Transform3D();
     private final int trajectory = new Random().nextInt(3);
-    public TransformGroup objTG = new TransformGroup(trans3d);
     private final TransformGroup TG = new TransformGroup();
-    private WakeupOnElapsedFrames wakeUpCall;
-    private final Pebbles pebbles = new Pebbles();
+    private final Pebbles pebbles;
     private final Switch mySwitch;
-
+    public TransformGroup objTG = new TransformGroup(trans3d);
     public Shape3D shape;
+    private WakeupOnElapsedFrames wakeUpCall;
 
     public Asteroid() throws IOException {
-//        trans3d.setTranslation(new Vector3f(new Random().nextInt(2500) - 1250,
-//                new Random().nextInt(2500) - 1250,
-//                new Random().nextInt(2500) - 1250));
+        trans3d.setTranslation(new Vector3f(new Random().nextInt(250) - 125,
+                new Random().nextInt(250) - 125,
+                new Random().nextInt(250) - 125));
+        objTG.setTransform(trans3d);
         mySwitch = new Switch();
         mySwitch.setCapability(Switch.ALLOW_SWITCH_WRITE);
         BranchGroup BG = Commons.f_load("Imports/Objects/Asteroid.obj");
         shape = (Shape3D) BG.getChild(0);
         shape.setAppearance(setApp("Imports/Textures/Asteroids/tex" + (new Random().nextInt(5) + 1) + ".jpg"));
+        pebbles = new Pebbles(shape);
         mySwitch.addChild(BG);
         TG.addChild(pebbles);
         TG.addChild(pebbles.TG);

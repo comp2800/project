@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Random;
 
-import static codes.Commons.setApp;
-
 public class Pebbles extends Behavior {
 
     private final Transform3D trans3d = new Transform3D();
@@ -20,12 +18,12 @@ public class Pebbles extends Behavior {
     public TransformGroup TG = new TransformGroup();
     private WakeupOnElapsedFrames wakeUpCall;
 
-    public Pebbles() throws IOException {
+    public Pebbles(Shape3D asteroid) throws IOException {
         for (int i = 0; i < 10; i++) {
             trajectories[i] = new Random().nextInt(3);
             BranchGroup BG = Commons.f_load("Imports/Objects/Asteroid.obj");
             Shape3D shape = (Shape3D) BG.getChild(0);
-            shape.setAppearance(setApp("Imports/Textures/Asteroids/tex" + (new Random().nextInt(5) + 1) + ".jpg"));
+            shape.setAppearance(asteroid.getAppearance());
             Transform3D trans3d = new Transform3D();
             trans3d.rotX(Math.PI / (new Random().nextInt(20) + 1));
             trans3d.rotY(Math.PI / (new Random().nextInt(20) + 1));
@@ -57,7 +55,7 @@ public class Pebbles extends Behavior {
             Transform3D T3D = new Transform3D();
             pebbleTG.getTransform(T3D);
             T3D.mul(trans);
-            T3D.setScale(1f/10);
+            T3D.setScale(1f / 5);
             pebbleTG.setTransform(T3D);
         }
         wakeupOn(wakeUpCall);
