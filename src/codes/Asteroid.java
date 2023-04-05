@@ -24,6 +24,9 @@ public class Asteroid extends Behavior {
     public Shape3D shape;
 
     public Asteroid() throws IOException {
+//        trans3d.setTranslation(new Vector3f(new Random().nextInt(2500) - 1250,
+//                new Random().nextInt(2500) - 1250,
+//                new Random().nextInt(2500) - 1250));
         mySwitch = new Switch();
         mySwitch.setCapability(Switch.ALLOW_SWITCH_WRITE);
         BranchGroup BG = Commons.f_load("Imports/Objects/Asteroid.obj");
