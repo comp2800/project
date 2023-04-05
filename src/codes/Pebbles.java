@@ -10,10 +10,8 @@ import java.util.Random;
 
 public class Pebbles extends Behavior {
 
-    private final Transform3D trans3d = new Transform3D();
     private final Transform3D trans = new Transform3D();
     private final int[] trajectories = new int[50];
-    public TransformGroup objTG = new TransformGroup(trans3d);
 
     public TransformGroup TG = new TransformGroup();
     private WakeupOnElapsedFrames wakeUpCall;
