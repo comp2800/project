@@ -1,6 +1,8 @@
 package codes;
 
+import org.jdesktop.j3d.examples.collision.CollisionDetector;
 import org.jogamp.java3d.*;
+import org.jogamp.java3d.utils.geometry.Sphere;
 import org.jogamp.java3d.utils.image.TextureLoader;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.java3d.utils.universe.ViewingPlatform;
@@ -64,16 +66,15 @@ public class Game extends JPanel {
 
         sceneBG.addChild(bg);
 
+
         TurretBehaviour gunTurret1 = new TurretBehaviour(hundredBS);
         Transform3D trans1 = new Transform3D();
-        trans1.setTranslation(new Vector3f(100, 0, 0));
         MovingPlane plane1 = new MovingPlane("Imports/Objects/Fighter_01.obj", vp);
-//        objTG.addChild(plane1.objTG);
-//        objTG.addChild(plane1);
+        objTG.addChild(plane1.objTG);
+        objTG.addChild(plane1);
 
         TurretBehaviour gunTurret2 = new TurretBehaviour(hundredBS);
         Transform3D trans2 = new Transform3D();
-        trans2.setTranslation(new Vector3f(0, 0, 0));
         MovingPlane plane2 = new MovingPlane("Imports/Objects/Fighter_01.obj", vp2);
 //        objTG.addChild(plane2.objTG); // MULTI
 //        objTG.addChild(plane2);       // MULTI
@@ -169,7 +170,6 @@ public class Game extends JPanel {
                     gunTurret1.alpha.setStartTime(System.currentTimeMillis());
                     sound.setFile("Imports/Sounds/s2.wav");
                     sound.play();
-                    asteroid.boom();
                 }
 
             }
@@ -308,8 +308,16 @@ public class Game extends JPanel {
 //            sceneTG.addChild(aster);
 //            sceneTG.addChild(aster.objTG);
 //        }
-        sceneTG.addChild(asteroid);
-        sceneTG.addChild(asteroid.objTG);
+        AsteroidCollisionDetector cdGroup = new AsteroidCollisionDetector(asteroid);
+        cdGroup.setSchedulingBounds(Commons.twentyBS);
+        sceneTG.addChild(cdGroup);
+//        sceneTG.addChild(new Sphere(1.4f, Commons.obj_Appearance(Commons.Green)));
+        Transform3D td = new Transform3D();
+        td.setTranslation(new Vector3f(0,4,0));
+        TransformGroup tg = new TransformGroup(td);
+        tg.addChild(asteroid);
+        tg.addChild(asteroid.objTG);
+        sceneTG.addChild(tg);
         sceneTG.addChild(new Space("Imports/Textures/bg2.png").setApp());
 
         return sceneBG;
