@@ -16,7 +16,7 @@ public class AsteroidCollisionDetector extends Behavior {
     }
 
     public void initialize() {
-        wakeEnter = new WakeupOnCollisionEntry(asteroid.shape, WakeupOnCollisionEntry.USE_GEOMETRY);
+            wakeEnter = new WakeupOnCollisionEntry(asteroid.shape, WakeupOnCollisionEntry.USE_GEOMETRY);
         wakeupOn(wakeEnter);
     }
 
