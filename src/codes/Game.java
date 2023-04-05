@@ -1,6 +1,8 @@
 package codes;
 
+import org.jdesktop.j3d.examples.collision.CollisionDetector;
 import org.jogamp.java3d.*;
+import org.jogamp.java3d.utils.geometry.Sphere;
 import org.jogamp.java3d.utils.image.TextureLoader;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.java3d.utils.universe.ViewingPlatform;
@@ -25,8 +27,17 @@ public class Game extends JPanel {
     SoundEffect sound = new SoundEffect();
     private Canvas3D[] canvas;
     private Matrix4d mtrx = new Matrix4d();
+    private static Asteroid asteroid;
 
-    public Game(BranchGroup sceneBG) {
+    static {
+        try {
+            asteroid = new Asteroid();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Game(BranchGroup sceneBG) throws IOException {
         GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
         canvas = new Canvas3D[2];
         for (int i = 0; i < 2; i++) { // MULTI i=2
@@ -50,24 +61,23 @@ public class Game extends JPanel {
         bg.setImageScaleMode(Background.SCALE_FIT_MAX);
         bg.setApplicationBounds(new BoundingSphere(new Point3d(0, 0, 0), Double.MAX_VALUE));
 
-        sound.setFile("Imports/Sounds/background.wav");
-        sound.loop();
+//        sound.setFile("Imports/Sounds/background.wav");
+//        sound.loop();
 
         sceneBG.addChild(bg);
 
+
         TurretBehaviour gunTurret1 = new TurretBehaviour(hundredBS);
         Transform3D trans1 = new Transform3D();
-        trans1.setTranslation(new Vector3f(100, 0, 0));
         MovingPlane plane1 = new MovingPlane("Imports/Objects/Fighter_01.obj", vp);
         objTG.addChild(plane1.objTG);
         objTG.addChild(plane1);
 
         TurretBehaviour gunTurret2 = new TurretBehaviour(hundredBS);
         Transform3D trans2 = new Transform3D();
-        trans2.setTranslation(new Vector3f(0, 0, 0));
         MovingPlane plane2 = new MovingPlane("Imports/Objects/Fighter_01.obj", vp2);
-        objTG.addChild(plane2.objTG); // MULTI
-        objTG.addChild(plane2);       // MULTI
+//        objTG.addChild(plane2.objTG); // MULTI
+//        objTG.addChild(plane2);       // MULTI
         canvas[0].addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -292,14 +302,23 @@ public class Game extends JPanel {
         TransformGroup sceneTG = new TransformGroup();     // create the scene's TransformGroup
         sceneBG.addChild(sceneTG);
         sceneBG.addChild(Commons.add_Lights(Commons.White, 1));
-        Asteroid[] asteroids = new Asteroid[500];
-        for (Asteroid asteroid : asteroids) {
-            asteroid = new Asteroid();
-            sceneTG.addChild(asteroid);
-            sceneTG.addChild(asteroid.objTG);
-        }
-        sceneTG.addChild(new SolarSystem().create_Object());
-        sceneTG.addChild(new Space("Imports/Textures/bg2.png").setBg());
+//        Asteroid[] asteroids = new Asteroid[500];
+//        for (Asteroid aster : asteroids) {
+//            aster = new Asteroid();
+//            sceneTG.addChild(aster);
+//            sceneTG.addChild(aster.objTG);
+//        }
+        AsteroidCollisionDetector cdGroup = new AsteroidCollisionDetector(asteroid);
+        cdGroup.setSchedulingBounds(Commons.twentyBS);
+        sceneTG.addChild(cdGroup);
+//        sceneTG.addChild(new Sphere(1.4f, Commons.obj_Appearance(Commons.Green)));
+        Transform3D td = new Transform3D();
+        td.setTranslation(new Vector3f(0,4,0));
+        TransformGroup tg = new TransformGroup(td);
+        tg.addChild(asteroid);
+        tg.addChild(asteroid.objTG);
+        sceneTG.addChild(tg);
+        sceneTG.addChild(new Space("Imports/Textures/bg2.png").setApp());
 
         return sceneBG;
     }
