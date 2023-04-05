@@ -37,25 +37,6 @@ public class Commons extends JPanel {
     private static JFrame frame;
     private static Color3f[] mtl_clrs = {White, Grey, Black};
 
-    /* a constructor to set up for the application */
-    public Commons(BranchGroup sceneBG) {
-        GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
-        Canvas3D canvas = new Canvas3D(config);
-
-        SimpleUniverse su = new SimpleUniverse(canvas);    // create a SimpleUniverse
-        define_Viewer(su, new Point3d(1.0d, 1.0d, 4.0d));  // set the viewer's location
-
-        sceneBG.addChild(add_Lights(White, 1));
-        sceneBG.addChild(key_Navigation(su));              // allow key navigation
-        sceneBG.compile();                                   // optimize the BranchGroup
-        su.addBranchGraph(sceneBG);                        // attach the scene to SimpleUniverse
-
-        setLayout(new BorderLayout());
-        add("Center", canvas);
-        frame.setSize(800, 800);                           // set the size of the JFrame
-        frame.setVisible(true);
-    }
-
     /* Loads blender obj file and returns BranchGroup */
     public static BranchGroup f_load(String path) throws IOException {
         // Loading wanted object's BranchGroup
@@ -107,24 +88,6 @@ public class Commons extends JPanel {
         return rotatedTG;
     }
 
-    public static TextureUnitState loadTextureUnit(String fnm, int texAttr)
-  /* Create a texture unit state by combining a loaded texture
-     and texture attributes. Mipmaps are generated for the texture.
-  */ {
-        TextureLoader loader =
-                new TextureLoader(fnm, TextureLoader.GENERATE_MIPMAP, null);
-        System.out.println("Loaded floor texture: " + fnm);
-
-        Texture2D tex = (Texture2D) loader.getTexture();
-        tex.setMinFilter(Texture2D.MULTI_LEVEL_LINEAR);
-
-        TextureAttributes ta = new TextureAttributes();
-        ta.setTextureMode(texAttr);
-
-        TextureUnitState tus = new TextureUnitState(tex, ta, null);
-        return tus;
-    }
-
     public static ViewingPlatform createViewer(ViewingPlatform vp, Canvas3D canvas3D) {
         // a Canvas3D can only be attached to a single Viewer
         Viewer viewer = new Viewer(canvas3D);                 // attach a Viewer to its canvas
@@ -151,20 +114,6 @@ public class Commons extends JPanel {
                 rotationAlpha, rotTG, yAxis, 0.0f, (float) Math.PI * 2.0f);
         rot_beh.setSchedulingBounds(new BoundingSphere(new Point3d(0, 0, 0), 100000));
         return rot_beh;
-    }
-
-    public static Texture2D loadTexture(String fn)
-    // load image from file fn as a texture
-    {
-        TextureLoader texLoader = new TextureLoader(fn, null);
-        Texture2D texture = (Texture2D) texLoader.getTexture();
-        if (texture == null)
-            System.out.println("Cannot load texture from " + fn);
-        else {
-            System.out.println("Loaded texture from " + fn);
-            texture.setEnable(true);
-        }
-        return texture;
     }
 
     public static void orbitControls(Canvas3D c, SimpleUniverse su)
@@ -213,22 +162,5 @@ public class Commons extends JPanel {
         KeyNavigatorBehavior keyNavBeh = new KeyNavigatorBehavior(view_TG);
         keyNavBeh.setSchedulingBounds(twentyBS);
         return keyNavBeh;
-    }
-
-    /* a function to build the content branch and attach to 'scene' */
-    public static BranchGroup create_Scene() {
-        BranchGroup sceneBG = new BranchGroup();
-        TransformGroup sceneTG = new TransformGroup();
-        sceneTG.addChild(new Box(0.5f, 0.5f, 0.5f, obj_Appearance(Orange)));
-        sceneBG.addChild(rotate_Behavior(7500, sceneTG));
-
-        sceneBG.addChild(sceneTG);
-        return sceneBG;
-    }
-
-    public static void main(String[] args) {
-        frame = new JFrame("PN's Common File");            // NOTE: change XY to student's initials
-        frame.getContentPane().add(new Commons(create_Scene()));  // create an instance of the class
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }
