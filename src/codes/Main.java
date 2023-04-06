@@ -38,7 +38,7 @@ public class Main implements ActionListener {
         f.setVisible(true);
     }
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
         new Main();
     }
 
