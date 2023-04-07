@@ -6,12 +6,12 @@ import org.jogamp.vecmath.Point3d;
 
 import static codes.Commons.hundredBS;
 
-public class TurretBehaviour {
+public class Turret {
     public Alpha alpha = new Alpha(1, 500);
     public TransformGroup aimBot = new TransformGroup();
     public BranchGroup ammoBG;
 
-    public TurretBehaviour() {
+    public Turret() {
         ammoBG = new BranchGroup();
         Appearance app = Commons.obj_Appearance(Commons.Green);
         Box laser = new Box(0.1f, 0.1f, 0.1f, app);

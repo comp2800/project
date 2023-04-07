@@ -54,13 +54,13 @@ public class Game extends JPanel {
         sceneBG.addChild(bg);
 
 
-        TurretBehaviour gunTurret1 = new TurretBehaviour();
+        Turret gunTurret1 = new Turret();
         Transform3D trans1 = new Transform3D();
         MovingPlane plane1 = new MovingPlane("Imports/Objects/Fighter_01.obj", vp);
         objTG.addChild(plane1.objTG);
         objTG.addChild(plane1);
 
-        TurretBehaviour gunTurret2 = new TurretBehaviour();
+        Turret gunTurret2 = new Turret();
         Transform3D trans2 = new Transform3D();
         MovingPlane plane2 = new MovingPlane("Imports/Objects/Fighter_01.obj", vp2);
         objTG.addChild(plane2.objTG); // MULTI
