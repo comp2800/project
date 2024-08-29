@@ -1,4 +1,4 @@
-# project
+# Project
 Java3D Flight Simulator Project
 
 Welcome to this project. This project was done in collaboration with a couple University of Windsor students for one of their courses.
